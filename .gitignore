@@ -25,3 +25,11 @@ hs_err_pid*
 # other ignores
 .idea
 .gradle
+client/build/distributions/client-1.0-SNAPSHOT.tar
+server/build/distributions/server-1.0-SNAPSHOT.tar
+server/build/tmp/jar/MANIFEST.MF
+server/build/scripts/server.bat
+server/build/scripts/server
+client/build/tmp/jar/MANIFEST.MF
+client/build/scripts/client.bat
+client/build/scripts/client

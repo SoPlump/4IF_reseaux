@@ -19,6 +19,6 @@ application {
 
     run {
         standardInput = System.in
-        args = ["localhost"]
+        args = ["1234"]
     }
 }
