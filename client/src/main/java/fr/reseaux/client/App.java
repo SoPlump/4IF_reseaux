@@ -1,6 +1,7 @@
 package fr.reseaux.client;
 
 import fr.reseaux.client.view.UIController;
+import fr.reseaux.common.Message;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -43,9 +44,11 @@ public class App extends Application {
         LOGGER.info("JavaFX application successfully started");
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // launch javafx app
         LOGGER.info(Runtime.getRuntime().maxMemory());
+        EchoClient client = new EchoClient(args);
         launch(args);
     }
+
 }
