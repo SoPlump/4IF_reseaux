@@ -1,5 +1,7 @@
 package fr.reseaux.client.view;
 
+import fr.reseaux.client.App;
+import fr.reseaux.client.Controller;
 import fr.reseaux.common.Message;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,6 +20,8 @@ import org.apache.logging.log4j.Logger;
 public class UIController {
     private Stage stage;
 
+    private Controller controller;
+
     @FXML
     private BorderPane mainPane;
 
@@ -32,11 +36,13 @@ public class UIController {
 
     private static final Logger LOGGER = LogManager.getLogger(UIController.class);
 
-    public UIController(Stage stage) {
+
+    public UIController(Stage stage, Controller controller) {
         this.stage = stage;
         this.sendButton = new Button();
         this.conversationArea = new ConversationArea();
         this.messageArea = new TextArea();
+        this.controller = controller;
     }
 
     public void initialize() {
@@ -50,10 +56,10 @@ public class UIController {
         // Send button
         this.sendButton.setText("Send");
         this.sendButton.addEventHandler(ActionEvent.ACTION, actionEvent -> {
-            String text = messageArea.getText();
+            Message msg = new Message(messageArea.getText(), "bidule");
             this.messageArea.clear();
-            this.conversationArea.addMessage(new Message(text, "bidule"));
-            //this.controller.computeRound();
+            this.conversationArea.addMessage(msg);
+            this.controller.sendMessage(msg);
         });
 
         this.mainPane.setCenter(conversationArea);

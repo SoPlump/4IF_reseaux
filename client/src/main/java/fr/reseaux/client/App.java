@@ -13,6 +13,8 @@ import java.io.IOException;
 
 public class App extends Application {
 
+    private static String[] args;
+
     private static final Logger LOGGER = LogManager.getLogger(App.class);
 
     /**
@@ -30,7 +32,8 @@ public class App extends Application {
         );
 
         // create and set controller
-        UIController uiController = new UIController(stage);
+        Controller controller = new Controller(args);
+        UIController uiController = new UIController(stage, controller);
         loader.setController(uiController);
 
         // load scene
@@ -47,7 +50,7 @@ public class App extends Application {
     public static void main(String[] args) throws IOException {
         // launch javafx app
         LOGGER.info(Runtime.getRuntime().maxMemory());
-        EchoClient client = new EchoClient(args);
+        fr.reseaux.client.App.args = args;
         launch(args);
     }
 

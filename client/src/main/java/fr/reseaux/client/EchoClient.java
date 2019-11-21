@@ -8,11 +8,15 @@ import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 
-public class EchoClient {
+public class EchoClient extends Thread{
 
-    private static final Logger LOGGER = LogManager.getLogger(App.class);
+    private static final Logger LOGGER = LogManager.getLogger(EchoClient.class);
 
     private static String username;
+
+    Socket echoSocket = null;
+    PrintStream socOut = null;
+    BufferedReader socIn = null;
 
     /**
      * main method accepts a connection, receives a message from client then
@@ -21,9 +25,6 @@ public class EchoClient {
      */
     public EchoClient(String[] args) throws IOException {
         LOGGER.info("Creating EchoClient ...");
-        Socket echoSocket = null;
-        PrintStream socOut = null;
-        BufferedReader socIn = null;
 
         WriteThread writeTh = null;
 
@@ -41,8 +42,8 @@ public class EchoClient {
             socIn = new BufferedReader(
                     new InputStreamReader(echoSocket.getInputStream()));
             socOut = new PrintStream(echoSocket.getOutputStream());
-            writeTh = new WriteThread(echoSocket, username);
-            writeTh.start();
+            //writeTh = new WriteThread(echoSocket, username);
+            //writeTh.start();
         } catch (UnknownHostException e) {
             System.err.println("Don't know about host:" + args[0]);
             System.exit(1);
@@ -51,27 +52,33 @@ public class EchoClient {
                     + "the connection to:" + args[0]);
             System.exit(1);
         }
+    }
 
+    public void run() {
         String line;
         try {
             while (true) {
                 System.out.println(socIn.readLine());
-                if (!writeTh.isAlive()) {
+                /*if (!writeTh.isAlive()) {
                     System.out.println("Deconnexion");
                     break;
-                }
+                }*/
             }
         } catch (Exception e) {
             System.out.println("Déconnexion...");
         }
-        socOut.close();
-        socIn.close();
-        echoSocket.close();
+        try {
+            socOut.close();
+            socIn.close();
+            echoSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
     public void doWrite(Message msg) {
-
+        LOGGER.info("send message in EchoClient");
     }
 }
 
