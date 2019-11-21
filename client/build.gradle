@@ -30,6 +30,6 @@ application {
     mainClassName = 'fr.reseaux.client.App'
 
     run {
-        standardInput = System.in
+        args = ['localhost','1234']
     }
 }
