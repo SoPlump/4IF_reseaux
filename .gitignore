@@ -23,5 +23,5 @@
 hs_err_pid*
 
 # other ignores
-.idea/
-.gradle/
+.idea
+.gradle
