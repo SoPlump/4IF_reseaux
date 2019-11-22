@@ -36,7 +36,7 @@ public class Server {
                 sl.addClient(clientSocket);
             }
         } catch (Exception e) {
-            System.err.println("Error in EchoServer:" + e);
+            System.err.println("Error in Server:" + e);
         }
     }
 

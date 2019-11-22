@@ -28,6 +28,7 @@ public class ClientThread
             socIn = new BufferedReader(
                     new InputStreamReader(clientSocket.getInputStream()));
             //PrintStream socOut = new PrintStream(clientSocket.getOutputStream());
+            ObjectOutputStream outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
             ObjectInputStream ois = new ObjectInputStream(clientSocket.getInputStream());
             Message msg;
             while (true) {
