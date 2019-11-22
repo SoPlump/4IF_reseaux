@@ -34,6 +34,7 @@ public class App extends Application {
         // create and set controller
         Controller controller = new Controller(args);
         UIController uiController = new UIController(stage, controller);
+        controller.setUiController(uiController);
         loader.setController(uiController);
 
         // load scene
@@ -52,6 +53,10 @@ public class App extends Application {
         LOGGER.info(Runtime.getRuntime().maxMemory());
         fr.reseaux.client.App.args = args;
         launch(args);
+    }
+
+    public static void closeApp() {
+
     }
 
 }

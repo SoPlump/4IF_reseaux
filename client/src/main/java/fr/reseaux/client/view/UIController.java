@@ -14,6 +14,8 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+
 /**
  * JavaFX controller used to handle all the different view components
  */
@@ -58,12 +60,24 @@ public class UIController {
         this.sendButton.addEventHandler(ActionEvent.ACTION, actionEvent -> {
             Message msg = new Message(messageArea.getText(), "bidule");
             this.messageArea.clear();
-            this.conversationArea.addMessage(msg);
-            this.controller.sendMessage(msg);
+            //this.conversationArea.addMessage(msg);
+            try {
+                this.controller.sendMessage(msg);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
 
         this.mainPane.setCenter(conversationArea);
         this.bottomFlow.getChildren().add(messageArea);
         this.bottomFlow.getChildren().add(sendButton);
+    }
+
+    public void close() {
+        stage.close();
+    }
+
+    public void printMessage(Message msg) {
+        this.conversationArea.addMessage(msg);
     }
 }
