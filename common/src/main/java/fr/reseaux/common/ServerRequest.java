@@ -1,10 +1,11 @@
 package fr.reseaux.common;
 
+import java.io.Serializable;
 import java.net.Socket;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ServerRequest {
+public class ServerRequest implements Serializable {
 
     public String getRequestType() {
         return requestType;
@@ -22,26 +23,16 @@ public class ServerRequest {
         this.content = content;
     }
 
-    public Socket getClientSocket() {
-        return clientSocket;
-    }
-
-    public void setClientSocket(Socket clientSocket) {
-        this.clientSocket = clientSocket;
-    }
-
     private String requestType;
     private String content;
-    private Socket clientSocket;
 
-    public ServerRequest(String requestType, String content, Socket clientSocket) {
+    public ServerRequest(String requestType, String content) {
         this.requestType = requestType;
         this.content = content;
-        this.clientSocket = clientSocket;
     }
 
     public String getRequestAttribute(String attributeName) {
-        Pattern attributePattern = Pattern.compile(".*-" + attributeName + ":{(.*)}-.*");
+        Pattern attributePattern = Pattern.compile(".*-" + attributeName + ":\\{(.*?)}.*");
         Matcher attributeMatcher = attributePattern.matcher(this.content);
         if (attributeMatcher.matches()) {
             return attributeMatcher.group(1);

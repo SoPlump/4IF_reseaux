@@ -2,6 +2,8 @@ package fr.reseaux.server;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -9,7 +11,9 @@ public class Server {
 
     private static final Logger LOGGER = LogManager.getLogger(Server.class);
 
-    private static ServerListener sl;
+    private static MulticastThread multicastThread;
+
+    private static int multicastPort = 6789;
 
     public static void main(String[] args) {
         // launch javafx app
@@ -24,8 +28,8 @@ public class Server {
 
         try {
             listenSocket = new ServerSocket(Integer.parseInt(args[0])); //port
-            sl = new ServerListener();
-            sl.start();
+            multicastThread = new MulticastThread(multicastPort, (Inet4Address)Inet4Address.getByName("225.225.225.225"));
+            multicastThread.start();
             System.out.println("Server ready...");
             int i = 0;
             while (true) {
@@ -33,14 +37,16 @@ public class Server {
                 System.out.println("Connexion from:" + clientSocket.getInetAddress());
                 ClientThread ct = new ClientThread(clientSocket);
                 ct.start();
-                sl.addClient(clientSocket);
+                //sl.addClient(clientSocket);
             }
         } catch (Exception e) {
             System.err.println("Error in Server:" + e);
         }
     }
 
-    static ServerListener getListener() {
-        return sl;
+    static MulticastThread getMulticastThread() {
+        return multicastThread;
     }
 }
+
+
