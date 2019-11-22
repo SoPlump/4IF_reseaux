@@ -7,7 +7,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.net.*;
-import java.util.Scanner;
 
 public class EchoClient extends Thread {
 
@@ -17,8 +16,8 @@ public class EchoClient extends Thread {
 
     private Message lastMsg;
 
-    private ObjectOutputStream oos;
-    private ObjectInputStream ois;
+    private ObjectOutputStream outputStream;
+    private ObjectInputStream inputStream;
 
     Socket echoSocket = null;
     //PrintStream socOut = null;
@@ -50,9 +49,8 @@ public class EchoClient extends Thread {
 
             // this.ois = new ObjectInputStream(echoSocket.getInputStream());
             if (echoSocket.getInputStream() != null) {
-                this.oos = new ObjectOutputStream(echoSocket.getOutputStream());
-                //oos.flush();
-                //ObjectInputStream InStream = new ObjectInputStream(echoSocket.getInputStream());
+                this.outputStream = new ObjectOutputStream(echoSocket.getOutputStream());
+                this.inputStream = new ObjectInputStream(echoSocket.getInputStream());
             }
 
         } catch (UnknownHostException e) {
@@ -80,7 +78,12 @@ public class EchoClient extends Thread {
                 line = socIn.readLine();
                 lastMsg = new Message(line, this.username);
 
-                //lastMsg = (Message) ois.readObject();
+                //Object obj = inputStream.readObject();
+                //LOGGER.debug("nani");
+                //LOGGER.debug("OBJECT " + obj);
+                //lastMsg = (Message) inputStream.readObject();
+
+                //LOGGER.debug("MESSAGE RECEIVED : " + lastMsg);
 
                 // update the UI
                 Platform.runLater(updater);
@@ -107,7 +110,7 @@ public class EchoClient extends Thread {
         }
 
         try {
-            this.oos.writeObject(msg);
+            this.outputStream.writeObject(msg);
         } catch (Exception e) {
             LOGGER.error(e);
         }
