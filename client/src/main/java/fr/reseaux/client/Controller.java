@@ -12,10 +12,10 @@ public class Controller {
 
     private static UIController uiController;
 
-    private static EchoClient client;
+    private static Client client;
 
     public Controller(String[] args) throws IOException {
-        Controller.client = new EchoClient(args);
+        Controller.client = new Client(args);
         Controller.client.start();
     }
 

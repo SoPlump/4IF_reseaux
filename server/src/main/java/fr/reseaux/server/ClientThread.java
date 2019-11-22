@@ -1,4 +1,4 @@
-/** *
+/**
  * ClientThread
  * Example of a TCP server
  * Date: 14/12/08
@@ -8,7 +8,9 @@ package fr.reseaux.server;
 
 import java.io.*;
 import java.net.*;
+
 import fr.reseaux.common.Message;
+import fr.reseaux.common.ServerRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,14 +32,22 @@ public class ClientThread
             //PrintStream socOut = new PrintStream(clientSocket.getOutputStream());
             ObjectOutputStream outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
             ObjectInputStream ois = new ObjectInputStream(clientSocket.getInputStream());
-            Message msg;
+            Message message;
+            ServerRequest request;
             while (true) {
-                msg = (Message) ois.readObject();
-                LOGGER.debug("CLIENT THREAD : " + msg.getContent());
-                Server.getListener().addMessage(msg);
+                request = (ServerRequest) ois.readObject();
+                switch (request.getRequestType()) {
+                    case "message":
+                        String content = request.getRequestAttribute("content");
+                        String username = request.getRequestAttribute("username");
+                        message = new Message(content, username);
+                        Server.getMulticastThread().addMessage(message);
+                        LOGGER.info("CLIENT THREAD : " + message.getContent());
+                        //Server.getListener().addMessage(message);
+                }
             }
         } catch (Exception e) {
-            System.err.println("Error in ClientThread:" + e);
+            e.printStackTrace();
         }
     }
 

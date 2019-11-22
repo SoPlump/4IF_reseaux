@@ -1,16 +1,18 @@
 package fr.reseaux.client;
 
 import fr.reseaux.common.Message;
+import fr.reseaux.common.ServerRequest;
 import javafx.application.Platform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 
-public class EchoClient extends Thread {
+public class Client extends Thread {
 
-    private static final Logger LOGGER = LogManager.getLogger(EchoClient.class);
+    private static final Logger LOGGER = LogManager.getLogger(Client.class);
 
     private String username;
 
@@ -18,6 +20,12 @@ public class EchoClient extends Thread {
 
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
+
+    private Inet4Address multicastAddress;
+
+    private int multicastPort;
+
+    private MulticastSocket multicastSocket;
 
     Socket echoSocket = null;
     //PrintStream socOut = null;
@@ -28,11 +36,11 @@ public class EchoClient extends Thread {
      * main method accepts a connection, receives a message from client then
      * sends an echo to the client
      */
-    public EchoClient(String[] args) throws IOException {
-        LOGGER.info("Creating EchoClient ...");
+    public Client(String[] args) throws IOException {
+        LOGGER.info("Creating Client ...");
 
         if (args.length != 2) {
-            System.out.println("Usage: java EchoClient <EchoServer host> <EchoServer port>");
+            System.out.println("Usage: java Client <EchoServer host> <EchoServer port>");
             System.exit(1);
         }
 
@@ -53,6 +61,11 @@ public class EchoClient extends Thread {
                 this.inputStream = new ObjectInputStream(echoSocket.getInputStream());
             }
 
+            multicastAddress = (Inet4Address)Inet4Address.getByName("225.225.225.225");
+            multicastPort = 6789;
+            multicastSocket = new MulticastSocket(multicastPort);
+            multicastSocket.joinGroup(multicastAddress);
+
         } catch (UnknownHostException e) {
             System.err.println("Don't know about host:" + args[0]);
             System.exit(1);
@@ -72,11 +85,20 @@ public class EchoClient extends Thread {
             }
         };
 
+        String line;
+        byte[] buffer = new byte[1000];
+        DatagramPacket datagramPacket = new DatagramPacket(buffer, buffer.length);
         try {
-            String line;
+            String content = "abcd";
             while (true) {
-                line = socIn.readLine();
-                lastMsg = new Message(line, this.username);
+                multicastSocket.receive(datagramPacket);
+                content = new String(
+                        datagramPacket.getData(),
+                        datagramPacket.getOffset(),
+                        datagramPacket.getLength(),
+                        StandardCharsets.UTF_8 // or some other charset
+                );
+                lastMsg = new Message(content, "bullshit"); //todo : recuperer usename
 
                 //Object obj = inputStream.readObject();
                 //LOGGER.debug("nani");
@@ -91,6 +113,7 @@ public class EchoClient extends Thread {
         } catch (Exception e) {
             LOGGER.error(e);
         }
+
         try {
             LOGGER.info("CLOSING ALL");
             //socOut.close();
@@ -103,14 +126,14 @@ public class EchoClient extends Thread {
 
 
     public void doWrite(Message msg) throws IOException {
-        LOGGER.info("send message in EchoClient " + msg.toString());
+        LOGGER.info("send message in Client " + msg.toString());
 
         if (msg.getContent().equals("quit")) {
             Controller.closeApp(); //todo : close socket
         }
 
         try {
-            this.outputStream.writeObject(msg);
+            this.outputStream.writeObject(new ServerRequest("message", "-content:{"+msg.getContent()+"}-username:{"+username+"}"));
         } catch (Exception e) {
             LOGGER.error(e);
         }
