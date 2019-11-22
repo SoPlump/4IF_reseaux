@@ -8,6 +8,8 @@ package fr.reseaux.server;
 
 import java.io.*;
 import java.net.*;
+import java.util.List;
+import java.util.Vector;
 
 import fr.reseaux.common.Message;
 import fr.reseaux.common.ServerRequest;
@@ -36,6 +38,7 @@ public class ClientThread
             ServerRequest request;
             while (true) {
                 request = (ServerRequest) ois.readObject();
+                LOGGER.info("On passe là !!!!");
                 switch (request.getRequestType()) {
                     case "message":
                         String content = request.getRequestAttribute("content");
@@ -44,6 +47,11 @@ public class ClientThread
                         Server.getMulticastThread().addMessage(message);
                         LOGGER.info("CLIENT THREAD : " + message.getContent());
                         //Server.getListener().addMessage(message);
+                    case "getStory":
+                        LOGGER.info("CLIENT THREAD STORY ");
+                        List<Message> messageStory = Server.getMulticastThread().loadStory();
+                        LOGGER.info(messageStory);
+                        outputStream.writeObject(messageStory);
                 }
             }
         } catch (Exception e) {

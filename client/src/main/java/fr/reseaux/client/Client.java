@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 public class Client extends Thread {
 
@@ -84,6 +85,32 @@ public class Client extends Thread {
                 Controller.printMessage();
             }
         };
+
+        try {
+            LOGGER.info("Sending a request to get the story");
+            ServerRequest storyRequest = new ServerRequest("getStory","");
+            this.outputStream.writeObject(storyRequest);
+
+            while(true) {
+                List<Message> storyList = (List<Message>) this.inputStream.readObject();
+                if (storyList.size()!=0) {
+                    for (Message message : storyList) {
+                        lastMsg = new Message (message.toString(), message.getUsername());
+                        Platform.runLater(updater);
+                    }
+                    break;
+                }
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            /*
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+
+             */
+        }
+
+
 
         String line;
         byte[] buffer = new byte[1000];
