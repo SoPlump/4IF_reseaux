@@ -9,6 +9,7 @@ package fr.reseaux.server;
 import java.io.*;
 import java.net.*;
 import fr.reseaux.common.Message;
+import fr.reseaux.common.ServerRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,8 +32,10 @@ public class ClientThread
             ObjectOutputStream outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
             ObjectInputStream ois = new ObjectInputStream(clientSocket.getInputStream());
             Message msg;
+            ServerRequest request;
             while (true) {
-                msg = (Message) ois.readObject();
+                swit
+                request = (ServerRequest) ois.readObject();
                 LOGGER.debug("CLIENT THREAD : " + msg.getContent());
                 Server.getListener().addMessage(msg);
             }
