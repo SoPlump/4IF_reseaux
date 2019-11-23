@@ -104,4 +104,8 @@ public class UIController {
     public void printMessage(Message msg) {
         this.conversationArea.addMessage(msg);
     }
+
+    public void clearArea() {
+        conversationArea.clearArea();
+    }
 }

@@ -6,14 +6,17 @@ import org.apache.logging.log4j.Logger;
 import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Vector;
 
 public class Server {
 
     private static final Logger LOGGER = LogManager.getLogger(Server.class);
 
-    private static MulticastThread multicastThread;
+    //private static MulticastThread multicastThread;
 
     private static int multicastPort = 6789;
+
+    private static Vector<MulticastThread> multicastList = new Vector<>();
 
     public static void main(String[] args) {
         // launch javafx app
@@ -28,8 +31,17 @@ public class Server {
 
         try {
             listenSocket = new ServerSocket(Integer.parseInt(args[0])); //port
-            multicastThread = new MulticastThread(multicastPort, (Inet4Address)Inet4Address.getByName("225.225.225.225"));
-            multicastThread.start();
+
+            MulticastThread globalChat = new MulticastThread(multicastPort, (Inet4Address)Inet4Address.getByName("225.225.225.225"), "Global Chat");
+            multicastList.add(globalChat);
+            globalChat.start();
+
+            MulticastThread secondChat = new MulticastThread(multicastPort, (Inet4Address)Inet4Address.getByName("225.225.225.226"), "Secondary Chat");
+            multicastList.add(secondChat);
+            secondChat.start();
+
+            secondChat.addUser("bidule");
+
             System.out.println("Server ready...");
             int i = 0;
             while (true) {
@@ -44,8 +56,14 @@ public class Server {
         }
     }
 
-    static MulticastThread getMulticastThread() {
-        return multicastThread;
+    static MulticastThread getMulticastThreadByName(String groupName) {
+        for (MulticastThread thread : multicastList) {
+            if (thread.getGroupName().equals(groupName)) {
+                LOGGER.debug("Thread returned : " + thread.getGroupName());
+                return thread;
+            }
+        }
+        return null;
     }
 }
 

@@ -13,6 +13,7 @@ import java.util.Vector;
 
 import fr.reseaux.common.Message;
 import fr.reseaux.common.ServerRequest;
+import fr.reseaux.common.ServerResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,8 +23,11 @@ public class ClientThread
 
     private Socket clientSocket;
 
+    private String currentGroup;
+
     ClientThread(Socket s) {
         this.clientSocket = s;
+        this.currentGroup = "Global Chat";
     }
 
     public void run() {
@@ -38,22 +42,57 @@ public class ClientThread
             ServerRequest request;
             while (true) {
                 request = (ServerRequest) ois.readObject();
-                LOGGER.info("On passe là !!!!");
                 switch (request.getRequestType()) {
                     case "message":
                         String content = request.getRequestAttribute("content");
-                        LOGGER.debug(content);
                         String username = request.getRequestAttribute("username");
-                        LOGGER.debug(username);
                         message = new Message(content, username);
-                        Server.getMulticastThread().addMessage(message);
-                        LOGGER.info("CLIENT THREAD : " + message.getContent());
-                        //Server.getListener().addMessage(message);
+                        LOGGER.debug("Send a Message");
+                        Server.getMulticastThreadByName(currentGroup).addMessage(message);
+                        break;
+                    //Server.getListener().addMessage(message);
                     case "getStory":
-                        LOGGER.info("CLIENT THREAD STORY ");
-                        List<Message> messageStory = Server.getMulticastThread().loadStory();
-                        LOGGER.info(messageStory);
+                        LOGGER.debug("Get history");
+                        List<Message> messageStory = Server.getMulticastThreadByName(currentGroup).loadStory();
                         outputStream.writeObject(messageStory);
+                        break;
+                    case "connectToGroup":
+                        ServerResponse response;
+                        LOGGER.debug("Requesting connection to group chat");
+                        String groupName = request.getRequestAttribute("groupName");
+                        if ("Global Chat".equals(groupName)) {
+                            LOGGER.debug("Found Global Chat");
+                            String responseContent = Server.getMulticastThreadByName("Global Chat").retrieveInfos();
+                            response = new ServerResponse(true, responseContent);
+                            this.currentGroup = "Global Chat";
+                            outputStream.writeObject(response);
+                            break;
+                        } else {
+                            LOGGER.debug("Searching for another group than Global");
+                            if (Server.getMulticastThreadByName(groupName) == null) {
+                                response = new ServerResponse(false, "Sent request to unexisting group.");
+                                outputStream.writeObject(response);
+                                break;
+                            } else {
+                                String userRequested = request.getRequestAttribute("username");
+                                LOGGER.debug("Asking for connection");
+                                boolean connectionAuthorized = Server.getMulticastThreadByName(groupName).accept(userRequested);
+                                if (connectionAuthorized) {
+                                    LOGGER.debug("Asking for informations");
+                                    response = new ServerResponse(true, Server.getMulticastThreadByName(groupName).retrieveInfos());
+                                    this.currentGroup = groupName;
+                                    outputStream.writeObject(response);
+                                    break;
+                                } else {
+                                    response = new ServerResponse(false, "You are not allowed to join this chan.");
+                                    outputStream.writeObject(response);
+                                    break;
+
+                                }
+
+                            }
+                        }
+
                 }
             }
         } catch (Exception e) {
