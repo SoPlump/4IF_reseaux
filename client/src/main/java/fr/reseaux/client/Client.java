@@ -2,6 +2,7 @@ package fr.reseaux.client;
 
 import fr.reseaux.common.Message;
 import fr.reseaux.common.ServerRequest;
+import fr.reseaux.common.ServerResponse;
 import javafx.application.Platform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,6 +32,12 @@ public class Client extends Thread {
 
     private MulticastSocket multicastSocket;
 
+    private Inet4Address currentAddress = null;
+
+    private boolean noGroupJoined = true;
+
+    Runnable updater;
+
     Socket echoSocket = null;
     //PrintStream socOut = null;
     BufferedReader socIn = null;
@@ -52,7 +59,7 @@ public class Client extends Thread {
             System.out.println("Choose your user name : "); //todo : regarder si même nom qu'un autre
             //todo : rajouter connexion
             username = "bidule";//myName.nextLine();
-            username = String.valueOf((int) (Math.random() * 500));
+            //username = String.valueOf((int) (Math.random() * 500));
 
             // creation socket ==> connexion
             this.echoSocket = new Socket(args[0], Integer.parseInt(args[1]));
@@ -66,10 +73,10 @@ public class Client extends Thread {
                 this.inputStream = new ObjectInputStream(echoSocket.getInputStream());
             }
 
-            multicastAddress = (Inet4Address) Inet4Address.getByName("225.225.225.225");
-            multicastPort = 6789;
-            multicastSocket = new MulticastSocket(multicastPort);
-            multicastSocket.joinGroup(multicastAddress);
+            //multicastAddress = (Inet4Address) Inet4Address.getByName("225.225.225.225");
+            //multicastPort = 6789;
+            //multicastSocket = new MulticastSocket(multicastPort);
+            //multicastSocket.joinGroup(multicastAddress);
 
         } catch (UnknownHostException e) {
             System.err.println("Don't know about host:" + args[0]);
@@ -83,43 +90,27 @@ public class Client extends Thread {
     }
 
     public void run() {
-        Runnable updater = new Runnable() {
+        updater = new Runnable() {
             @Override
             public void run() {
+                LOGGER.debug("Printed");
                 Controller.printMessage();
             }
         };
-
-        try {
-
-            LOGGER.info("Sending a request to get the story");
-            lastMsg = new Message("Connected as " + username, "server");
-            messageList.add(lastMsg);
-            ServerRequest storyRequest = new ServerRequest("getStory", "");
-            this.outputStream.writeObject(storyRequest);
-
-            //while(true) {
-            Vector<Message> storyList = (Vector<Message>) this.inputStream.readObject();
-            if (storyList.size() != 0) {
-                for (Message message : storyList) {
-                    this.lastMsg = new Message(message.toString(), message.getUsername());
-                    LOGGER.info("Last Message Is : " + lastMsg);
-                    messageList.add(lastMsg);
-                }
-                Platform.runLater(updater);
-                //  break;
+/*
+        Runnable clearer = new Runnable() {
+            @Override
+            public void run() {
+                LOGGER.debug("Cleared");
+                Controller.clearArea();
             }
-            // }
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            /*
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        };
 
-             */
-        }
+ */
 
-
+        joinGroup("Global Chat");
+        //joinGroup("Secondary Chat", updater);
+        //joinGroup("Third Chat", updater);
         String line;
         byte[] buffer = new byte[1000];
         DatagramPacket datagramPacket = new DatagramPacket(buffer, buffer.length);
@@ -188,6 +179,92 @@ public class Client extends Thread {
 
     public Vector<Message> getMessageList() {
         return this.messageList;
+    }
+
+
+    public void joinGroup(String groupName) {
+
+        try {
+            LOGGER.debug("Connection requested to " + groupName);
+            ServerRequest connectRequest = new ServerRequest("connectToGroup", "-username:{"+username+"}-groupName:{"+groupName+"}");
+            outputStream.writeObject(connectRequest);
+            ServerResponse response = (ServerResponse)this.inputStream.readObject();
+            if (response.isSuccess()) {
+                String address = response.getRequestAttribute("groupAddress").replace("/","");
+                LOGGER.info("Adresse : " + address);
+                String port = response.getRequestAttribute("groupPort");
+                LOGGER.info("Port : " + port);
+
+                multicastPort = Integer.parseInt(port);
+                multicastAddress = (Inet4Address)Inet4Address.getByName(address);
+
+                if (currentAddress != null) {
+                    multicastSocket.leaveGroup(currentAddress);
+                } else {
+                    multicastSocket = new MulticastSocket(multicastPort);
+                }
+                currentAddress = multicastAddress;
+                multicastSocket.joinGroup(multicastAddress);
+
+                messageList.add(new Message("Clear the board <server_action>", "server"));
+                LOGGER.info("Sending a request to get the story");
+                lastMsg = new Message("Connected as " + username, "server");
+                messageList.add(lastMsg);
+
+                Platform.runLater(updater);
+                ServerRequest storyRequest = new ServerRequest("getStory", "");
+                this.outputStream.writeObject(storyRequest);
+
+                //while(true) {
+                Vector<Message> storyList = (Vector<Message>) this.inputStream.readObject();
+                if (storyList.size() != 0) {
+                    for (Message message : storyList) {
+                        this.lastMsg = new Message(message.toString(), message.getUsername());
+                        LOGGER.info("Last Message Is : " + lastMsg);
+                        messageList.add(lastMsg);
+                    }
+                    Platform.runLater(updater);
+                    //  break;
+                }
+                if (noGroupJoined) noGroupJoined = false;
+                // }
+            } else {
+                LOGGER.debug(response.getContent());
+            }
+
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        /*
+        try {
+
+            LOGGER.info("Sending a request to get the story");
+            lastMsg = new Message("Connected as " + username, "server");
+            messageList.add(lastMsg);
+            Platform.runLater(updater);
+            ServerRequest storyRequest = new ServerRequest("getStory", "");
+            this.outputStream.writeObject(storyRequest);
+
+            //while(true) {
+            Vector<Message> storyList = (Vector<Message>) this.inputStream.readObject();
+            if (storyList.size() != 0) {
+                for (Message message : storyList) {
+                    this.lastMsg = new Message(message.toString(), message.getUsername());
+                    LOGGER.info("Last Message Is : " + lastMsg);
+                    messageList.add(lastMsg);
+                }
+                Platform.runLater(updater);
+                //  break;
+            }
+            // }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            /*
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+
+             */
     }
 }
 

@@ -43,6 +43,15 @@ public class App extends Application {
         // load scene
         Scene scene = new Scene(loader.load());
 
+        scene.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case F10: controller.getClient().joinGroup("Global Chat"); break;
+                case F11: controller.getClient().joinGroup("Secondary Chat"); break;
+            }
+        });
+
+
+
         // init and show stage
         stage.setTitle("SendgIF");
         stage.setScene(scene);

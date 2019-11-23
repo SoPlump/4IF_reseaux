@@ -13,6 +13,10 @@ public class Controller {
 
     private static UIController uiController;
 
+    public static Client getClient() {
+        return client;
+    }
+
     private static Client client;
 
     public Controller(String[] args) throws IOException {
@@ -36,8 +40,16 @@ public class Controller {
     public static void printMessage() {
         Vector<Message> messageToPrint = client.getMessageList();
         for (Message message : messageToPrint) {
+            if ("Clear the board <server_action>".equals(message.getContent())) {
+                clearArea();
+            } else {
                 Controller.uiController.printMessage(message);
+            }
         }
         client.clearMessageList();
+    }
+
+    public static void clearArea() {
+        uiController.clearArea();
     }
 }
