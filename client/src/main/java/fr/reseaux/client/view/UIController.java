@@ -1,13 +1,16 @@
 package fr.reseaux.client.view;
 
+import com.sun.swing.internal.plaf.metal.resources.metal_es;
 import fr.reseaux.client.App;
 import fr.reseaux.client.Controller;
 import fr.reseaux.common.Message;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
@@ -29,6 +32,10 @@ public class UIController {
 
     @FXML
     private FlowPane bottomFlow;
+
+    public TextArea getMessageArea() {
+        return messageArea;
+    }
 
     private TextArea messageArea;
 
@@ -65,6 +72,23 @@ public class UIController {
                 this.controller.sendMessage(msg);
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        });
+
+        this.messageArea.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER: {
+                    LOGGER.info(messageArea.getText());
+                    Message msg = new Message(messageArea.getText(), "bidule");
+                    messageArea.clear();
+                    //this.conversationArea.addMessage(msg);
+                    try {
+                        controller.sendMessage(msg);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
             }
         });
 

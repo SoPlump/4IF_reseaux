@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Vector;
 
 public class Controller {
     private static final Logger LOGGER = LogManager.getLogger(Controller.class);
@@ -24,6 +25,7 @@ public class Controller {
     }
 
     public void sendMessage(Message msg) throws IOException {
+        LOGGER.info("Message Controller : " + msg);
         this.client.doWrite(msg);
     }
 
@@ -32,6 +34,10 @@ public class Controller {
     }
 
     public static void printMessage() {
-        Controller.uiController.printMessage(Controller.client.getMessage());
+        Vector<Message> messageToPrint = client.getMessageList();
+        for (Message message : messageToPrint) {
+                Controller.uiController.printMessage(message);
+        }
+        client.clearMessageList();
     }
 }
