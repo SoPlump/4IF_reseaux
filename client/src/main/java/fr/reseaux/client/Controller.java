@@ -34,4 +34,8 @@ public class Controller {
     public static void printMessage() {
         Controller.uiController.printMessage(Controller.client.getMessage());
     }
+
+    public boolean connectUser(String username, String password) {
+        return true;
+    }
 }
