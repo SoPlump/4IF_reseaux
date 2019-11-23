@@ -38,13 +38,20 @@ public class UIController {
 
     private static final Logger LOGGER = LogManager.getLogger(UIController.class);
 
+    private LoginPage loginPage;
+
 
     public UIController(Stage stage, Controller controller) {
         this.stage = stage;
+
+        // Conversation page
         this.sendButton = new Button();
         this.conversationArea = new ConversationArea();
         this.messageArea = new TextArea();
         this.controller = controller;
+
+        // Login page
+        this.loginPage = new LoginPage(this);
     }
 
     public void initialize() {
@@ -68,9 +75,10 @@ public class UIController {
             }
         });
 
-        this.mainPane.setCenter(conversationArea);
-        this.bottomFlow.getChildren().add(messageArea);
-        this.bottomFlow.getChildren().add(sendButton);
+        //this.mainPane.setCenter(conversationArea);
+        this.mainPane.setCenter(loginPage);
+        //this.bottomFlow.getChildren().add(messageArea);
+        //this.bottomFlow.getChildren().add(sendButton);
     }
 
     public void close() {
@@ -79,5 +87,17 @@ public class UIController {
 
     public void printMessage(Message msg) {
         this.conversationArea.addMessage(msg);
+    }
+
+    public void loadLoginPage() {
+
+    }
+
+    public void loadConversationPage() {
+
+    }
+
+    public void connectUser(String username, String password) {
+        this.controller.connectUser(username, password);
     }
 }
