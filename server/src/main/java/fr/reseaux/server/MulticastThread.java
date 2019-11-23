@@ -7,9 +7,11 @@
 package fr.reseaux.server;
 
 import fr.reseaux.common.Message;
+import fr.reseaux.common.User;
 
 import java.io.*;
 import java.net.*;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -24,12 +26,16 @@ public class MulticastThread
 
     private Queue<Message> messageQueue = new ConcurrentLinkedQueue<>();
 
+    private List<User> userList;
+
     public MulticastThread(int multicastPort, Inet4Address multicastAddress) {
         try {
             this.multicastSocket = new MulticastSocket(multicastPort);
             this.multicastPort = multicastPort;
             this.multicastAddress = multicastAddress;
             this.multicastSocket.joinGroup(multicastAddress);
+            UserFactory userFactory = new UserFactory();
+            this.userList = userFactory.createUsersFromXML(); //todo : donner le fichier utilisateur
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -52,6 +58,10 @@ public class MulticastThread
 
     public void addMessage(Message msg) {
         this.messageQueue.add(msg);
+    }
+
+    public void connectUser(User user) {
+
     }
 
 }
