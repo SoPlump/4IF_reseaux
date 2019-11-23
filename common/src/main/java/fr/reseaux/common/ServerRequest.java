@@ -1,11 +1,17 @@
 package fr.reseaux.common;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.spi.LoggerRegistry;
+
 import java.io.Serializable;
 import java.net.Socket;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ServerRequest implements Serializable {
+
+    private static final Logger LOGGER = LogManager.getLogger(ServerRequest.class);
 
     public String getRequestType() {
         return requestType;
@@ -29,14 +35,17 @@ public class ServerRequest implements Serializable {
     public ServerRequest(String requestType, String content) {
         this.requestType = requestType;
         this.content = content;
+        this.content = this.content.replace("\n", "").replace("\r", "");
     }
 
     public String getRequestAttribute(String attributeName) {
+
         Pattern attributePattern = Pattern.compile(".*-" + attributeName + ":\\{(.*?)}.*");
         Matcher attributeMatcher = attributePattern.matcher(this.content);
         if (attributeMatcher.matches()) {
             return attributeMatcher.group(1);
         }
+        LOGGER.debug(this.content);
         return null;
     }
 

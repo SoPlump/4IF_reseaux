@@ -1,4 +1,0 @@
-bidule : A va
-bidule : Bonjour
-bidule : az
-bidule : erq

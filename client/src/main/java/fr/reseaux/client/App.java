@@ -3,8 +3,10 @@ package fr.reseaux.client;
 import fr.reseaux.client.view.UIController;
 import fr.reseaux.common.Message;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +21,7 @@ public class App extends Application {
 
     /**
      * Entry point called by JavaFX to launch the app
+     *
      * @param stage the main {@link Stage} of the app
      * @throws IOException if the main FXML document could not be loaded
      */

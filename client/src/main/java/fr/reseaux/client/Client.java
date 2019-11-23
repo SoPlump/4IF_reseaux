@@ -10,6 +10,7 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Vector;
 
 public class Client extends Thread {
 
@@ -25,6 +26,8 @@ public class Client extends Thread {
     private Inet4Address multicastAddress;
 
     private int multicastPort;
+
+    private Vector<Message> messageList = new Vector<>();
 
     private MulticastSocket multicastSocket;
 
@@ -49,6 +52,7 @@ public class Client extends Thread {
             System.out.println("Choose your user name : "); //todo : regarder si même nom qu'un autre
             //todo : rajouter connexion
             username = "bidule";//myName.nextLine();
+            username = String.valueOf((int) (Math.random() * 500));
 
             // creation socket ==> connexion
             this.echoSocket = new Socket(args[0], Integer.parseInt(args[1]));
@@ -62,7 +66,7 @@ public class Client extends Thread {
                 this.inputStream = new ObjectInputStream(echoSocket.getInputStream());
             }
 
-            multicastAddress = (Inet4Address)Inet4Address.getByName("225.225.225.225");
+            multicastAddress = (Inet4Address) Inet4Address.getByName("225.225.225.225");
             multicastPort = 6789;
             multicastSocket = new MulticastSocket(multicastPort);
             multicastSocket.joinGroup(multicastAddress);
@@ -87,20 +91,25 @@ public class Client extends Thread {
         };
 
         try {
+
             LOGGER.info("Sending a request to get the story");
-            ServerRequest storyRequest = new ServerRequest("getStory","");
+            lastMsg = new Message("Connected as " + username, "server");
+            messageList.add(lastMsg);
+            ServerRequest storyRequest = new ServerRequest("getStory", "");
             this.outputStream.writeObject(storyRequest);
 
-            while(true) {
-                List<Message> storyList = (List<Message>) this.inputStream.readObject();
-                if (storyList.size()!=0) {
-                    for (Message message : storyList) {
-                        lastMsg = new Message (message.toString(), message.getUsername());
-                        Platform.runLater(updater);
-                    }
-                    break;
+            //while(true) {
+            Vector<Message> storyList = (Vector<Message>) this.inputStream.readObject();
+            if (storyList.size() != 0) {
+                for (Message message : storyList) {
+                    this.lastMsg = new Message(message.toString(), message.getUsername());
+                    LOGGER.info("Last Message Is : " + lastMsg);
+                    messageList.add(lastMsg);
                 }
+                Platform.runLater(updater);
+                //  break;
             }
+            // }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             /*
@@ -109,7 +118,6 @@ public class Client extends Thread {
 
              */
         }
-
 
 
         String line;
@@ -126,6 +134,7 @@ public class Client extends Thread {
                         StandardCharsets.UTF_8 // or some other charset
                 );
                 lastMsg = new Message(content, "bullshit"); //todo : recuperer usename
+                messageList.add(lastMsg);
 
                 //Object obj = inputStream.readObject();
                 //LOGGER.debug("nani");
@@ -160,14 +169,25 @@ public class Client extends Thread {
         }
 
         try {
-            this.outputStream.writeObject(new ServerRequest("message", "-content:{"+msg.getContent()+"}-username:{"+username+"}"));
+            String newline = System.getProperty("line.separator");
+            LOGGER.info(msg.getContent().contains(newline));
+            this.outputStream.writeObject(new ServerRequest("message", "-content:{" + msg.getContent() + "}-username:{" + username + "}"));
         } catch (Exception e) {
             LOGGER.error(e);
         }
     }
 
     public Message getMessage() {
+        LOGGER.info("Last Message : " + this.lastMsg);
         return this.lastMsg;
+    }
+
+    public void clearMessageList() {
+        messageList.clear();
+    }
+
+    public Vector<Message> getMessageList() {
+        return this.messageList;
     }
 }
 

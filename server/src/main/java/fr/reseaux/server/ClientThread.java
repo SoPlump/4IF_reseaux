@@ -42,7 +42,9 @@ public class ClientThread
                 switch (request.getRequestType()) {
                     case "message":
                         String content = request.getRequestAttribute("content");
+                        LOGGER.debug(content);
                         String username = request.getRequestAttribute("username");
+                        LOGGER.debug(username);
                         message = new Message(content, username);
                         Server.getMulticastThread().addMessage(message);
                         LOGGER.info("CLIENT THREAD : " + message.getContent());
