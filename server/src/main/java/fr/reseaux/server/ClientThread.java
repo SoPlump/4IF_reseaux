@@ -102,6 +102,12 @@ public class ClientThread
                         LOGGER.debug("Requesting add of a user");
                         String user = request.getRequestAttribute("user"); // Can be used later in case we have admins
                         String userToAdd = request.getRequestAttribute("username");
+                        boolean exists = Server.userExists(userToAdd);
+                        if (!exists) {
+                            response = new ServerResponse(false, "User " + userToAdd + " does not exist.");
+                            outputStream.writeObject(response);
+                            break;
+                        }
                         boolean success = Server.getMulticastThreadByName(currentGroup).addUser(userToAdd);
                         String responseContent;
                         if(success) {

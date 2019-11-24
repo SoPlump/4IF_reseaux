@@ -1,4 +1,4 @@
-<groups>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><groups>
     <group>
         <name>
             Global Chat
@@ -14,4 +14,4 @@
             225.225.225.2
         </ip>
     </group>
-</groups>
+<group><name>Another Chat</name><ip>225.225.225.3</ip></group></groups>

@@ -130,6 +130,13 @@ public class Server {
         String newIp = "225.225."+thirdNumber+"."+lastNumber;
         return newIp;
     }
+
+    public static boolean userExists(String username) {
+        for (User user: userList) {
+            if (user.getUsername().equals(username)) return true;
+        }
+        return false;
+    }
 }
 
 

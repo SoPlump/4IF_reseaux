@@ -153,6 +153,8 @@ public class Client extends Thread {
                     joinGroup(msg);
                 } else if (msg.getContent().startsWith("/create")) {
                     createGroup(msg);
+                } else if (msg.getContent().equals("/info")) {
+
                 }
             } else {
                 this.outputStream.writeObject(new ServerRequest("message", "-content:{" + msg.getContent() + "}-username:{" + username + "}"));
