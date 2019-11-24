@@ -102,6 +102,12 @@ public class ClientThread
                         LOGGER.debug("Requesting add of a user");
                         String user = request.getRequestAttribute("user"); // Can be used later in case we have admins
                         String userToAdd = request.getRequestAttribute("username");
+                        boolean exists = Server.userExists(userToAdd);
+                        if (!exists) {
+                            response = new ServerResponse(false, "User " + userToAdd + " does not exist.");
+                            outputStream.writeObject(response);
+                            break;
+                        }
                         boolean success = Server.getMulticastThreadByName(currentGroup).addUser(userToAdd);
                         String responseContent;
                         if(success) {
@@ -115,6 +121,16 @@ public class ClientThread
                     case "createGroup":
                         LOGGER.debug("Request to create a group");
                         groupName = request.getRequestAttribute("groupName");
+                        user = request.getRequestAttribute("username");
+                        success = Server.addGroup(groupName, user);
+                        if (success) {
+                            responseContent = "Successfully created group " + groupName;
+                        } else {
+                            responseContent = "Group " + groupName + " was already a group or couldn't be created.";
+                        }
+                        response = new ServerResponse(success, responseContent);
+                        outputStream.writeObject(response);
+                        break;
 
                 }
             }

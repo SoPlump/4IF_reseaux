@@ -4,8 +4,10 @@ import fr.reseaux.common.ServerResponse;
 import fr.reseaux.common.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xml.sax.SAXException;
 
-import java.io.File;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.*;
 import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -44,6 +46,7 @@ public class Server {
 
             listenSocket = new ServerSocket(Integer.parseInt(args[0])); //port
 
+            /*
             MulticastThread globalChat = new MulticastThread(multicastPort, (Inet4Address) Inet4Address.getByName("225.225.225.225"), "Global Chat");
             multicastList.add(globalChat);
             globalChat.start();
@@ -51,8 +54,13 @@ public class Server {
             MulticastThread secondChat = new MulticastThread(multicastPort, (Inet4Address) Inet4Address.getByName("225.225.225.226"), "Secondary Chat");
             multicastList.add(secondChat);
             secondChat.start();
+            */
 
-            secondChat.addUser("bidule");
+            loadGroups();
+            for (MulticastThread thread : multicastList) {
+                LOGGER.debug(thread.getGroupName());
+                LOGGER.debug(thread.retrieveInfos());
+            }
 
             System.out.println("Server ready...");
             int i = 0;
@@ -91,7 +99,44 @@ public class Server {
         }
     }
 
-    static void createGroup() {}
+    private static void loadGroups() {
+        try {
+            MulticastThreadFactory groupFactory = new MulticastThreadFactory();
+            multicastList = groupFactory.createGroupsFromXML(new File("./src/main/resources/groups.xml"), multicastPort);
+            for(MulticastThread group : multicastList) {
+                group.start();
+            }
+        } catch (IOException | SAXException | ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static boolean addGroup(String groupName, String username) {
+        for (MulticastThread group : multicastList) {
+            if (group.getGroupName().equals(groupName)) return false;
+        }
+        MulticastThreadFactory multicastThreadFactory = new MulticastThreadFactory();
+        String ip = grantIp();
+        if (multicastThreadFactory.addGroup(new File("./src/main/resources/groups.xml"), groupName, ip, multicastPort, multicastList)) {
+            return getMulticastThreadByName(groupName).addUser(username);
+        }
+        return false;
+    }
+
+    private static String grantIp() {
+        int lastNumber = (multicastList.size() + 1) % 255;
+        int thirdNumber = 225 + (multicastList.size() + 1) / 255;
+        String newIp = "225.225."+thirdNumber+"."+lastNumber;
+        return newIp;
+    }
+
+    public static boolean userExists(String username) {
+        for (User user: userList) {
+            if (user.getUsername().equals(username)) return true;
+        }
+        return false;
+    }
 }
 
 
