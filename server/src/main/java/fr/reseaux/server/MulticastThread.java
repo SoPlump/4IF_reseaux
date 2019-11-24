@@ -91,6 +91,7 @@ public class MulticastThread
 
     public void addMessageToStory(Message message) {
         try {
+            if (message.getContent().startsWith("/")) return;
             System.out.println(message);
             //File file = new File("files/story.txt");
             //System.out.println(file.exists());
@@ -144,7 +145,7 @@ public class MulticastThread
         return false;
     }
 
-    public void addUser(String username) {
+    public boolean addUser(String username) {
         try {
             LOGGER.info("Name : " + username);
             LOGGER.info("Set : " + whitelist);
@@ -152,9 +153,13 @@ public class MulticastThread
                 BufferedWriter writer = new BufferedWriter(new FileWriter("files/" + groupName + "/whitelist.txt", true));
                 writer.append(username + '\n');
                 writer.close();
+                return true;
+            } else {
+                return false;
             }
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
 
 

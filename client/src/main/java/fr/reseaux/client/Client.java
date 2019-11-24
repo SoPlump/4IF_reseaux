@@ -12,6 +12,8 @@ import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Client extends Thread {
 
@@ -115,7 +117,7 @@ public class Client extends Thread {
         byte[] buffer = new byte[1000];
         DatagramPacket datagramPacket = new DatagramPacket(buffer, buffer.length);
         try {
-            String content = "abcd";
+            String content;
             while (true) {
                 multicastSocket.receive(datagramPacket);
                 content = new String(
@@ -124,7 +126,7 @@ public class Client extends Thread {
                         datagramPacket.getLength(),
                         StandardCharsets.UTF_8 // or some other charset
                 );
-                lastMsg = new Message(content, "bullshit"); //todo : recuperer usename
+                lastMsg = new Message(content); //todo : recuperer usename
                 messageList.add(lastMsg);
 
                 //Object obj = inputStream.readObject();
@@ -153,16 +155,24 @@ public class Client extends Thread {
 
 
     public void doWrite(Message msg) throws IOException {
+        msg.setContent(msg.getContent().replace("\n", "").replace("\r", ""));
         LOGGER.info("send message in Client " + msg.toString());
-
-        if (msg.getContent().equals("quit")) {
-            Controller.closeApp(); //todo : close socket
-        }
-
         try {
-            String newline = System.getProperty("line.separator");
-            LOGGER.info(msg.getContent().contains(newline));
-            this.outputStream.writeObject(new ServerRequest("message", "-content:{" + msg.getContent() + "}-username:{" + username + "}"));
+
+            if (msg.getContent().startsWith("/")) {
+
+                if (msg.getContent().equals("/quit")) {
+                    Controller.closeApp(); //todo : close socket
+                } else if (msg.getContent().equals("/clear")) {
+                    Controller.clearArea();
+                } else if (msg.getContent().startsWith("/add")) {
+                    addUserToGroup(msg);
+                } else if (msg.getContent().startsWith("/join")) {
+                    joinGroup(msg);
+                }
+            } else {
+                this.outputStream.writeObject(new ServerRequest("message", "-content:{" + msg.getContent() + "}-username:{" + username + "}"));
+            }
         } catch (Exception e) {
             LOGGER.error(e);
         }
@@ -186,17 +196,17 @@ public class Client extends Thread {
 
         try {
             LOGGER.debug("Connection requested to " + groupName);
-            ServerRequest connectRequest = new ServerRequest("connectToGroup", "-username:{"+username+"}-groupName:{"+groupName+"}");
+            ServerRequest connectRequest = new ServerRequest("connectToGroup", "-username:{" + username + "}-groupName:{" + groupName + "}");
             outputStream.writeObject(connectRequest);
-            ServerResponse response = (ServerResponse)this.inputStream.readObject();
+            ServerResponse response = (ServerResponse) this.inputStream.readObject();
             if (response.isSuccess()) {
-                String address = response.getRequestAttribute("groupAddress").replace("/","");
+                String address = response.getRequestAttribute("groupAddress").replace("/", "");
                 LOGGER.info("Adresse : " + address);
                 String port = response.getRequestAttribute("groupPort");
                 LOGGER.info("Port : " + port);
 
                 multicastPort = Integer.parseInt(port);
-                multicastAddress = (Inet4Address)Inet4Address.getByName(address);
+                multicastAddress = (Inet4Address) Inet4Address.getByName(address);
 
                 if (currentAddress != null) {
                     multicastSocket.leaveGroup(currentAddress);
@@ -206,7 +216,7 @@ public class Client extends Thread {
                 currentAddress = multicastAddress;
                 multicastSocket.joinGroup(multicastAddress);
 
-                messageList.add(new Message("Clear the board <server_action>", "server"));
+                messageList.add(new Message("/clear", "server"));
                 LOGGER.info("Sending a request to get the story");
                 lastMsg = new Message("Connected as " + username, "server");
                 messageList.add(lastMsg);
@@ -219,7 +229,7 @@ public class Client extends Thread {
                 Vector<Message> storyList = (Vector<Message>) this.inputStream.readObject();
                 if (storyList.size() != 0) {
                     for (Message message : storyList) {
-                        this.lastMsg = new Message(message.toString(), message.getUsername());
+                        this.lastMsg = new Message(message.getContent(), message.getUsername());
                         LOGGER.info("Last Message Is : " + lastMsg);
                         messageList.add(lastMsg);
                     }
@@ -265,6 +275,40 @@ public class Client extends Thread {
             e.printStackTrace();
 
              */
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void addUserToGroup(Message addMessage) {
+        try {
+            Pattern patternAdd = Pattern.compile("/add ([a-zA-Z0-9]+)");
+            Matcher matcherAdd = patternAdd.matcher(addMessage.getContent());
+            if (matcherAdd.matches()) {
+                String userToAdd = matcherAdd.group(1);
+                ServerRequest addRequest = new ServerRequest("addUser", "-user:{" + username + "}-username:{"
+                        + userToAdd + "}");
+                this.outputStream.writeObject(addRequest);
+                ServerResponse response = (ServerResponse)this.inputStream.readObject();
+                LOGGER.debug(response.getContent());
+            } else {
+                LOGGER.debug("Pas de nom entré pour l'ajout");
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void joinGroup(Message msg) {
+        Pattern patternGroup = Pattern.compile("/join (.+)");
+            Matcher matcherGroup = patternGroup.matcher(msg.getContent());
+        if (matcherGroup.matches()) {
+            String group = matcherGroup.group(1);
+            joinGroup(group);
+        } else {
+            LOGGER.debug("Pas de nom entré pour le changement de groupe");
+        }
     }
 }
 
