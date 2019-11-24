@@ -47,6 +47,7 @@ public class UIController {
 
     private LoginPage loginPage;
 
+    private RegisterPage registerPage;
 
     public UIController(Stage stage, Controller controller) {
         this.stage = stage;
@@ -59,6 +60,9 @@ public class UIController {
 
         // Login page
         this.loginPage = new LoginPage(this);
+
+        // Register page
+        this.registerPage = new RegisterPage(this);
     }
 
     public void initialize() {
@@ -100,6 +104,7 @@ public class UIController {
         });
 
         loadLoginPage();
+        //loadRegisterPage();
     }
 
     public void close() {
@@ -114,7 +119,7 @@ public class UIController {
         conversationArea.clearArea();
     }
 
-    private void loadLoginPage() {
+    public void loadLoginPage() {
         this.mainPane.setCenter(loginPage);
     }
 
@@ -124,12 +129,37 @@ public class UIController {
         this.bottomFlow.getChildren().add(sendButton);
     }
 
+    public void loadRegisterPage() {
+        this.mainPane.setCenter(registerPage);
+        LOGGER.debug("loading register page");
+    }
+
     public void connectUser(String username, String password) {
         if (this.controller.connectUser(username, password)) {
             loadConversationPage();
         }
         else {
-            this.loginPage.printConnectionError();
+            this.loginPage.printConnectionError(); //todo: afficher la bonne erreur : déjà connecté ou mauvais mdp ou identifiant
+        }
+    }
+
+    public void registerUser(String username, String password, String confirmationPassword) {
+        LOGGER.debug("meme mdp : " + password.equals(confirmationPassword));
+        if ((password.equals(""))||(username.equals(""))) {
+            this.registerPage.printRegistrationError("Please enter an username and a password.");
+            return;
+        }
+        if (password.equals(confirmationPassword)) {
+            if (this.controller.registerUser(username, password)) {
+                LOGGER.debug("UIController : creating a user");
+                loadConversationPage();
+            }
+            else {
+                this.registerPage.printRegistrationError("User already exists.");
+            }
+        }
+        else {
+            this.registerPage.printRegistrationError("Please enter the same password.");
         }
     }
 }

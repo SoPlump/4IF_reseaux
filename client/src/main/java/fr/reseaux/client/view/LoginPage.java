@@ -1,13 +1,13 @@
 package fr.reseaux.client.view;
 
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 
 public class LoginPage extends VBox {
 
@@ -18,6 +18,10 @@ public class LoginPage extends VBox {
     private Button connexionButton;
 
     private UIController uiController;
+
+    private Hyperlink newAccountLink;
+
+    private Label errorLabel;
 
     public LoginPage(UIController uiController) {
         super();
@@ -41,15 +45,29 @@ public class LoginPage extends VBox {
         this.usernameField.setPromptText("username");
         this.passwordField.setPromptText("password");
 
+        this.newAccountLink = new Hyperlink("Click here");
+
+        TextFlow flow = new TextFlow(new Text("Don't have an account? "), newAccountLink);
+
+        newAccountLink.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                uiController.loadRegisterPage();
+            }
+        });
+
+        errorLabel = new Label();
+        errorLabel.setTextFill(Color.RED);
+
         this.getChildren().add(this.usernameField);
         this.getChildren().add(this.passwordField);
         this.getChildren().add(this.connexionButton);
+        this.getChildren().add(errorLabel);
+        this.getChildren().add(flow);
     }
 
     public void printConnectionError() {
-        Label errorLabel = new Label("Bad username or password.");
-        errorLabel.setTextFill(Color.RED);
-
-        this.getChildren().add(errorLabel);
+        errorLabel.setText("Bad username or password.");
     }
 }
