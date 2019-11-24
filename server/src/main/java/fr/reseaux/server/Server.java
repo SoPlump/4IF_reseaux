@@ -90,6 +90,8 @@ public class Server {
             return new ServerResponse(false, "");
         }
     }
+
+    static void createGroup() {}
 }
 
 
