@@ -18,9 +18,5 @@
          </children></FlowPane>
    </bottom>
    <center>
-      <VBox prefHeight="213.0" prefWidth="290.0" style="-fx-spacing: 10; -fx-padding: 100; -fx-alignment: center;" BorderPane.alignment="CENTER">
-         <children>
-         </children>
-      </VBox>
    </center>
 </BorderPane>
