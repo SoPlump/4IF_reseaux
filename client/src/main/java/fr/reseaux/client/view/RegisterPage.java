@@ -9,21 +9,23 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
-public class LoginPage extends VBox {
+public class RegisterPage extends VBox {
 
     private TextField usernameField;
 
     private PasswordField passwordField;
 
-    private Button connexionButton;
+    private PasswordField confirmationPasswordField;
+
+    private Button registerButton;
 
     private UIController uiController;
 
-    private Hyperlink newAccountLink;
+    private Hyperlink loadLoginPage;
 
     private Label errorLabel;
 
-    public LoginPage(UIController uiController) {
+    public RegisterPage(UIController uiController) {
         super();
 
         this.uiController = uiController;
@@ -35,25 +37,24 @@ public class LoginPage extends VBox {
 
         this.usernameField = new TextField();
         this.passwordField = new PasswordField();
-        this.connexionButton = new Button("Go !");
-        this.connexionButton.setMinWidth(70.0);
+        this.confirmationPasswordField = new PasswordField();
+        this.registerButton = new Button("Register now !");
+        this.registerButton.setMinWidth(70.0);
 
-        this.connexionButton.addEventHandler(ActionEvent.ACTION, actionEvent -> {
-            this.uiController.connectUser(usernameField.getText(), passwordField.getText());
+        this.registerButton.addEventHandler(ActionEvent.ACTION, actionEvent -> {
+            this.uiController.registerUser(usernameField.getText(), passwordField.getText(), confirmationPasswordField.getText());
         });
 
         this.usernameField.setPromptText("username");
         this.passwordField.setPromptText("password");
+        this.confirmationPasswordField.setPromptText("confirm your password");
 
-        this.newAccountLink = new Hyperlink("Click here");
+        this.loadLoginPage = new Hyperlink("Go back to login.");
 
-        TextFlow flow = new TextFlow(new Text("Don't have an account? "), newAccountLink);
-
-        newAccountLink.setOnAction(new EventHandler<ActionEvent>() {
-
+        loadLoginPage.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                uiController.loadRegisterPage();
+                uiController.loadLoginPage();
             }
         });
 
@@ -62,12 +63,13 @@ public class LoginPage extends VBox {
 
         this.getChildren().add(this.usernameField);
         this.getChildren().add(this.passwordField);
-        this.getChildren().add(this.connexionButton);
+        this.getChildren().add(this.confirmationPasswordField);
+        this.getChildren().add(this.registerButton);
         this.getChildren().add(errorLabel);
-        this.getChildren().add(flow);
+        this.getChildren().add(this.loadLoginPage);
     }
 
-    public void printConnectionError() {
-        errorLabel.setText("Bad username or password.");
+    public void printRegistrationError(String text) {
+        errorLabel.setText(text);
     }
 }

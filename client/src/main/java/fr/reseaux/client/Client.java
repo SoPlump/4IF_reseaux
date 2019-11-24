@@ -78,14 +78,12 @@ public class Client extends Thread {
                     + "the connection to:" + args[0]);
             System.exit(1);
         }
-        LOGGER.info("vi");
     }
 
     public void run() {
         updater = new Runnable() {
             @Override
             public void run() {
-                LOGGER.debug("Printed");
                 Controller.printMessage();
             }
         };
@@ -165,7 +163,6 @@ public class Client extends Thread {
     }
 
     public Message getMessage() {
-        LOGGER.info("Last Message : " + this.lastMsg);
         return this.lastMsg;
     }
 
@@ -214,7 +211,6 @@ public class Client extends Thread {
                 if (storyList.size() != 0) {
                     for (Message message : storyList) {
                         this.lastMsg = new Message(message.getContent(), message.getUsername());
-                        LOGGER.info("Last Message Is : " + lastMsg);
                         messageList.add(lastMsg);
                     }
                     Platform.runLater(updater);
@@ -244,7 +240,25 @@ public class Client extends Thread {
                 return true;
             }
         } catch (Exception e) {
-            LOGGER.debug(e);
+            LOGGER.error(e);
+        }
+        return false;
+    }
+
+    public boolean registerUser(User user) {
+        try {
+            LOGGER.info("Trying to register user");
+            ServerRequest request = new ServerRequest("register", "-username:{"+user.getUsername()+"}-password:{"+user.getPassword()+"}");
+            outputStream.writeObject(request);
+            ServerResponse response = (ServerResponse) this.inputStream.readObject();
+
+            if (response.isSuccess()) {
+                this.username = user.getUsername();
+                joinGroup("Global Chat");
+                return true;
+            }
+        } catch (Exception e) {
+            LOGGER.error(e);
         }
         return false;
     }

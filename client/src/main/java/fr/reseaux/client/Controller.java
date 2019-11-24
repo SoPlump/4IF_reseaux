@@ -46,7 +46,6 @@ public class Controller {
     public static void printMessage() {
         Vector<Message> messageToPrint = client.getMessageList();
         for (Message message : messageToPrint) {
-            LOGGER.debug(message.getContent());
             if ("/clear".equals(message.getContent())) {
                 clearArea();
             } else {
@@ -62,5 +61,9 @@ public class Controller {
 
     public boolean connectUser(String username, String password) {
         return client.connectUser(new User(username, password));
+    }
+
+    public boolean registerUser(String username, String password) {
+        return client.registerUser(new User(username, password));
     }
 }

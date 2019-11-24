@@ -98,6 +98,12 @@ public class ClientThread
                         response = Server.connectUser(new User(username, password));
                         outputStream.writeObject(response);
                         break;
+                    case "register":
+                        username = request.getRequestAttribute("username");
+                        password = request.getRequestAttribute("password");
+                        response = Server.registerUser(new User(username, password));
+                        outputStream.writeObject(response);
+                        break;
                     case "addUser":
                         LOGGER.debug("Requesting add of a user");
                         String user = request.getRequestAttribute("user"); // Can be used later in case we have admins
