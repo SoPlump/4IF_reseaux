@@ -1,4 +1,4 @@
-<users>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><users>
     <user>
         <username>
             Brice
@@ -15,4 +15,12 @@
             mdp
         </password>
     </user>
-</users>
+    <user>
+        <username>Mathieu</username>
+        <password>mdp</password>
+    </user>
+    <user>
+        <username>Felix</username>
+        <password>mdp</password>
+    </user>
+<user><username>Pacome</username><password>mdp</password></user></users>
