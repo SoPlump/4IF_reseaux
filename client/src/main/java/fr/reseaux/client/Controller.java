@@ -2,6 +2,7 @@ package fr.reseaux.client;
 
 import fr.reseaux.client.view.UIController;
 import fr.reseaux.common.Message;
+import fr.reseaux.common.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -54,6 +55,6 @@ public class Controller {
     }
 
     public boolean connectUser(String username, String password) {
-        return true;
+        return client.connectUser(new User(username, password));
     }
 }

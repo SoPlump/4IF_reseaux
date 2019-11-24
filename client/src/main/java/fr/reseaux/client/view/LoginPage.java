@@ -3,9 +3,11 @@ package fr.reseaux.client.view;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 public class LoginPage extends VBox {
 
@@ -42,5 +44,12 @@ public class LoginPage extends VBox {
         this.getChildren().add(this.usernameField);
         this.getChildren().add(this.passwordField);
         this.getChildren().add(this.connexionButton);
+    }
+
+    public void printConnectionError() {
+        Label errorLabel = new Label("Bad username or password.");
+        errorLabel.setTextFill(Color.RED);
+
+        this.getChildren().add(errorLabel);
     }
 }

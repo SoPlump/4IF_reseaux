@@ -99,13 +99,7 @@ public class UIController {
             }
         });
 
-        this.mainPane.setCenter(conversationArea);
-        this.bottomFlow.getChildren().add(messageArea);
-        this.bottomFlow.getChildren().add(sendButton);
-        //this.mainPane.setCenter(conversationArea);
-        this.mainPane.setCenter(loginPage);
-        //this.bottomFlow.getChildren().add(messageArea);
-        //this.bottomFlow.getChildren().add(sendButton);
+        loadLoginPage();
     }
 
     public void close() {
@@ -119,15 +113,23 @@ public class UIController {
     public void clearArea() {
         conversationArea.clearArea();
     }
-    public void loadLoginPage() {
 
+    private void loadLoginPage() {
+        this.mainPane.setCenter(loginPage);
     }
 
-    public void loadConversationPage() {
-
+    private void loadConversationPage() {
+        this.mainPane.setCenter(conversationArea);
+        this.bottomFlow.getChildren().add(messageArea);
+        this.bottomFlow.getChildren().add(sendButton);
     }
 
     public void connectUser(String username, String password) {
-        this.controller.connectUser(username, password);
+        if (this.controller.connectUser(username, password)) {
+            loadConversationPage();
+        }
+        else {
+            this.loginPage.printConnectionError();
+        }
     }
 }

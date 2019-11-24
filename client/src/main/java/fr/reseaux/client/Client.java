@@ -3,9 +3,11 @@ package fr.reseaux.client;
 import fr.reseaux.common.Message;
 import fr.reseaux.common.ServerRequest;
 import fr.reseaux.common.ServerResponse;
+import fr.reseaux.common.User;
 import javafx.application.Platform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.graalvm.compiler.lir.gen.LIRGenerator_OptionDescriptors;
 
 import java.io.*;
 import java.net.*;
@@ -56,27 +58,15 @@ public class Client extends Thread {
         }
 
         try {
-            System.out.println("Choose your user name : "); //todo : regarder si même nom qu'un autre
-            //todo : rajouter connexion
-            username = "bidule";//myName.nextLine();
-            //username = String.valueOf((int) (Math.random() * 500));
-
             // creation socket ==> connexion
             this.echoSocket = new Socket(args[0], Integer.parseInt(args[1]));
             this.socIn = new BufferedReader(
                     new InputStreamReader(echoSocket.getInputStream()));
-            //socOut = new PrintStream(echoSocket.getOutputStream());
 
-            // this.ois = new ObjectInputStream(echoSocket.getInputStream());
             if (echoSocket.getInputStream() != null) {
                 this.outputStream = new ObjectOutputStream(echoSocket.getOutputStream());
                 this.inputStream = new ObjectInputStream(echoSocket.getInputStream());
             }
-
-            //multicastAddress = (Inet4Address) Inet4Address.getByName("225.225.225.225");
-            //multicastPort = 6789;
-            //multicastSocket = new MulticastSocket(multicastPort);
-            //multicastSocket.joinGroup(multicastAddress);
 
         } catch (UnknownHostException e) {
             System.err.println("Don't know about host:" + args[0]);
@@ -127,13 +117,6 @@ public class Client extends Thread {
                 lastMsg = new Message(content, "bullshit"); //todo : recuperer usename
                 messageList.add(lastMsg);
 
-                //Object obj = inputStream.readObject();
-                //LOGGER.debug("nani");
-                //LOGGER.debug("OBJECT " + obj);
-                //lastMsg = (Message) inputStream.readObject();
-
-                //LOGGER.debug("MESSAGE RECEIVED : " + lastMsg);
-
                 // update the UI
                 Platform.runLater(updater);
             }
@@ -150,7 +133,6 @@ public class Client extends Thread {
             e.printStackTrace();
         }
     }
-
 
     public void doWrite(Message msg) throws IOException {
         LOGGER.info("send message in Client " + msg.toString());
@@ -181,9 +163,7 @@ public class Client extends Thread {
         return this.messageList;
     }
 
-
     public void joinGroup(String groupName) {
-
         try {
             LOGGER.debug("Connection requested to " + groupName);
             ServerRequest connectRequest = new ServerRequest("connectToGroup", "-username:{"+username+"}-groupName:{"+groupName+"}");
@@ -235,36 +215,24 @@ public class Client extends Thread {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+    }
 
-        /*
+    public boolean connectUser(User user) {
         try {
+            LOGGER.info("Trying to connect user");
+            ServerRequest request = new ServerRequest("login", "-username:{"+user.getUsername()+"}-password:{"+user.getPassword()+"}");
+            outputStream.writeObject(request);
+            ServerResponse response = (ServerResponse) this.inputStream.readObject();
 
-            LOGGER.info("Sending a request to get the story");
-            lastMsg = new Message("Connected as " + username, "server");
-            messageList.add(lastMsg);
-            Platform.runLater(updater);
-            ServerRequest storyRequest = new ServerRequest("getStory", "");
-            this.outputStream.writeObject(storyRequest);
-
-            //while(true) {
-            Vector<Message> storyList = (Vector<Message>) this.inputStream.readObject();
-            if (storyList.size() != 0) {
-                for (Message message : storyList) {
-                    this.lastMsg = new Message(message.toString(), message.getUsername());
-                    LOGGER.info("Last Message Is : " + lastMsg);
-                    messageList.add(lastMsg);
-                }
-                Platform.runLater(updater);
-                //  break;
+            if (response.isSuccess()) {
+                this.username = user.getUsername();
+                joinGroup("Global Chat");
+                return true;
             }
-            // }
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            /*
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-
-             */
+        } catch (Exception e) {
+            LOGGER.debug(e);
+        }
+        return false;
     }
 }
 
