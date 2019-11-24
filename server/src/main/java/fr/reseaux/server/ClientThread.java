@@ -115,6 +115,16 @@ public class ClientThread
                     case "createGroup":
                         LOGGER.debug("Request to create a group");
                         groupName = request.getRequestAttribute("groupName");
+                        user = request.getRequestAttribute("username");
+                        success = Server.addGroup(groupName, user);
+                        if (success) {
+                            responseContent = "Successfully created group " + groupName;
+                        } else {
+                            responseContent = "Group " + groupName + " was already a group or couldn't be created.";
+                        }
+                        response = new ServerResponse(success, responseContent);
+                        outputStream.writeObject(response);
+                        break;
 
                 }
             }

@@ -280,5 +280,25 @@ public class Client extends Thread {
             LOGGER.debug("Pas de nom entré pour le changement de groupe");
         }
     }
+
+    public void createGroup(Message msg) {
+        try {
+            Pattern patternGroup = Pattern.compile("/create (.+)");
+            Matcher matcherGroup = patternGroup.matcher(msg.getContent());
+            if (matcherGroup.matches()) {
+                String group = matcherGroup.group(1);
+                ServerRequest requestCreate = new ServerRequest("createGroup", "-groupName:{" + group + "}-username:{"+username+"}");
+                outputStream.writeObject(requestCreate);
+                ServerResponse response = (ServerResponse) inputStream.readObject();
+                LOGGER.debug(response.getContent());
+            } else {
+                LOGGER.debug("Pas de nom entré pour la création de groupe");
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
+    }
 }
 

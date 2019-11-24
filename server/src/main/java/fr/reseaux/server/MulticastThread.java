@@ -9,6 +9,7 @@ package fr.reseaux.server;
 import fr.reseaux.common.Message;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import java.io.*;
 import java.net.*;
 import java.util.List;
@@ -90,45 +91,14 @@ public class MulticastThread
     }
 
     public void addMessageToStory(Message message) {
-        try {
-            if (message.getContent().startsWith("/")) return;
-            System.out.println(message);
-            //File file = new File("files/story.txt");
-            //System.out.println(file.exists());
-            //System.out.println(file.canWrite());
-            //PrintStream printStream = new PrintStream(file);
-            BufferedWriter writer = new BufferedWriter(new FileWriter("files/" + groupName + "/story.txt", true));
-            writer.append(message.toString() + '\n');
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        HistoryFactory historyFactory = new HistoryFactory();
+        historyFactory.addMessageToStory(message, new File("files/" + groupName + "/story.txt"));
     }
 
     public List<Message> loadStory() {
-        try {
-            Vector<Message> messageList = new Vector<>();
-            BufferedReader bufferedReader = new BufferedReader(new FileReader("files/" + groupName + "/story.txt"));
-            String line;
-            Pattern messagePattern = Pattern.compile("([0-9a-zA-Z]+?) : (.*)");
-            Matcher messageMatcher;
-            while ((line = bufferedReader.readLine()) != null) {
-                System.out.println(line);
-                messageMatcher = messagePattern.matcher(line);
-                if (messageMatcher.matches()) {
-                    System.out.println(line);
-                    Message message = new Message(messageMatcher.group(2), messageMatcher.group(1));
-                    messageList.add(message);
-                }
-            }
-            System.out.println(messageList);
-            return messageList;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+        HistoryFactory historyFactory = new HistoryFactory();
+        Vector<Message> messageList = historyFactory.loadStory(new File("files/" + groupName + "/story.txt"));
+        return messageList;
     }
 
     public String retrieveInfos() {
@@ -138,7 +108,7 @@ public class MulticastThread
     public boolean accept(String usernameRequest) {
         LOGGER.info(usernameRequest);
         for (String username : whitelist) {
-            if (username.equals(usernameRequest)) {
+            if (username.replace("\r", "").replace("\r", "").equals(usernameRequest)) {
                 return true;
             }
         }
@@ -146,38 +116,12 @@ public class MulticastThread
     }
 
     public boolean addUser(String username) {
-        try {
-            LOGGER.info("Name : " + username);
-            LOGGER.info("Set : " + whitelist);
-            if (this.whitelist.add(username)) {
-                BufferedWriter writer = new BufferedWriter(new FileWriter("files/" + groupName + "/whitelist.txt", true));
-                writer.append(username + '\n');
-                writer.close();
-                return true;
-            } else {
-                return false;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-
+        WhitelistFactory whitelistFactory = new WhitelistFactory();
+        return whitelistFactory.addUser(whitelist, new File("files/" + groupName + "/whitelist.txt"), username);
     }
 
     public void loadUsers() {
-        try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader("files/" + groupName + "/whitelist.txt"));
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                whitelist.add(line);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        WhitelistFactory whitelistFactory = new WhitelistFactory();
+        whitelist = whitelistFactory.loadUsers(new File("files/" + groupName + "/whitelist.txt"));
     }
-
-
 }
