@@ -10,7 +10,9 @@ import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
+import java.util.Objects;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 public class Server {
 
@@ -23,6 +25,10 @@ public class Server {
     private static Vector<MulticastThread> multicastList = new Vector<>();
 
     private static List<User> userList;
+
+    private static UserFactory userFactory;
+
+    private static final String USERFILE = "./src/main/resources/users.xml";
 
     public static void main(String[] args) {
         // launch javafx app
@@ -37,10 +43,8 @@ public class Server {
 
         try {
             // Create users
-            UserFactory userFactory = new UserFactory();
-            userList = userFactory.createUsersFromXML(new File("./src/main/resources/users.xml"));
-            LOGGER.debug("LISTE DES UTILISATEURS : " + userList);
-
+            userFactory = new UserFactory();
+            userList = userFactory.createUsersFromXML(new File(USERFILE));
 
             listenSocket = new ServerSocket(Integer.parseInt(args[0])); //port
 
@@ -77,17 +81,40 @@ public class Server {
         return null;
     }
 
-
     static ServerResponse connectUser(User user) {
-        LOGGER.debug(userList);
-        LOGGER.debug(user);
-        if (userList.contains(user)) {
-            LOGGER.debug("Server : connection successful");
-            return new ServerResponse(true, "");
+        List<User> result = userList.stream()
+                .filter(a -> Objects.equals(a, user))
+                .collect(Collectors.toList());
+
+        if (!result.isEmpty()) {
+            User userToConnect = result.get(0);
+            if (!userToConnect.isConnected()) {
+                LOGGER.debug("Server : connection successful");
+                userToConnect.setConnected(true);
+                return new ServerResponse(true, "");
+            }
         }
-        else {
-            LOGGER.debug("Server : connection not successful");
-            return new ServerResponse(false, "");
+        LOGGER.debug("Server : connection not successful");
+        return new ServerResponse(false, "");
+    }
+
+    static ServerResponse registerUser(User user) {
+        List<User> result = userList.stream()
+                .filter(a -> Objects.equals(a.getUsername(), user.getUsername()))
+                .collect(Collectors.toList());
+
+        if (result.isEmpty()) {
+            LOGGER.debug("Server : register successful");
+
+            userFactory.addUserToXML(user, new File(USERFILE));
+            userList.add(user);
+            user.setConnected(true);
+
+            LOGGER.debug("Liste des utilisateurs server" + userList);
+            return new ServerResponse(true, "");
+        } else {
+            LOGGER.debug("Server : register not successful");
+            return new ServerResponse(false, "User already exists");
         }
     }
 }

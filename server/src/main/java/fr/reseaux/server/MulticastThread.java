@@ -92,7 +92,6 @@ public class MulticastThread
     public void addMessageToStory(Message message) {
         try {
             if (message.getContent().startsWith("/")) return;
-            System.out.println(message);
             //File file = new File("files/story.txt");
             //System.out.println(file.exists());
             //System.out.println(file.canWrite());
@@ -113,15 +112,12 @@ public class MulticastThread
             Pattern messagePattern = Pattern.compile("([0-9a-zA-Z]+?) : (.*)");
             Matcher messageMatcher;
             while ((line = bufferedReader.readLine()) != null) {
-                System.out.println(line);
                 messageMatcher = messagePattern.matcher(line);
                 if (messageMatcher.matches()) {
-                    System.out.println(line);
                     Message message = new Message(messageMatcher.group(2), messageMatcher.group(1));
                     messageList.add(message);
                 }
             }
-            System.out.println(messageList);
             return messageList;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
