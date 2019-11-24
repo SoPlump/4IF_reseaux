@@ -1,5 +1,6 @@
 package fr.reseaux.server;
 
+import fr.reseaux.common.ServerResponse;
 import fr.reseaux.common.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -77,8 +78,16 @@ public class Server {
     }
 
 
-    static void connectUser(User user) {
+    static ServerResponse connectUser(User user) {
+        LOGGER.debug(userList);
+        LOGGER.debug(user);
         if (userList.contains(user)) {
+            LOGGER.debug("Server : connection successful");
+            return new ServerResponse(true, "");
+        }
+        else {
+            LOGGER.debug("Server : connection not successful");
+            return new ServerResponse(false, "");
         }
     }
 }
