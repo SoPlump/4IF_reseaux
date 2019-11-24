@@ -35,7 +35,11 @@ public class UserFactory {
             Node user = users.item(i);
             if (user.getNodeName() == "user") {
                 Element element = (Element) user;
-                userList.add(new User( element.getElementsByTagName("username").item(0).getTextContent(), element.getElementsByTagName("password").item(0).getTextContent()));
+                userList.add(
+                        new User(
+                        element.getElementsByTagName("username").item(0).getTextContent().replace("\n", "").replace("\r", "").replace(" ", ""),
+                        element.getElementsByTagName("password").item(0).getTextContent().replace("\n", "").replace("\r", "").replace(" ", "")
+                        ));
             }
         }
         return userList;

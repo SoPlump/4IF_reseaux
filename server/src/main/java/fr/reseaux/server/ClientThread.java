@@ -95,7 +95,8 @@ public class ClientThread
                     case "login":
                         username = request.getRequestAttribute("username");
                         password = request.getRequestAttribute("password");
-                        Server.connectUser(new User(username, password));
+                        response = Server.connectUser(new User(username, password));
+                        outputStream.writeObject(response);
                         break;
                     case "addUser":
                         LOGGER.debug("Requesting add of a user");
