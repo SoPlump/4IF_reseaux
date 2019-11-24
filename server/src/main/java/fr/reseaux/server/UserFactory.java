@@ -38,7 +38,6 @@ public class UserFactory {
                 userList.add(new User( element.getElementsByTagName("username").item(0).getTextContent(), element.getElementsByTagName("password").item(0).getTextContent()));
             }
         }
-        LOGGER.debug(userList.toString());
         return userList;
     }
 }
