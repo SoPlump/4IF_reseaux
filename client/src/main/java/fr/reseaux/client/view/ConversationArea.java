@@ -34,7 +34,7 @@ public class ConversationArea extends ScrollPane {
     }
 
     public void addMessage(Message msg) {
-        conversationItems.add(new Label(msg.getContent()));
+        conversationItems.add(new Label(msg.toString()));
         this.conversation.getChildren().add(conversationItems.get(i));
         ++i;
         LOGGER.debug(conversationItems);

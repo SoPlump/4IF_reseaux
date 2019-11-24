@@ -72,7 +72,7 @@ public class UIController {
         // Send button
         this.sendButton.setText("Send");
         this.sendButton.addEventHandler(ActionEvent.ACTION, actionEvent -> {
-            Message msg = new Message(messageArea.getText(), "bidule");
+            Message msg = new Message(messageArea.getText(), controller.getClient().getUsername());
             this.messageArea.clear();
             //this.conversationArea.addMessage(msg);
             try {

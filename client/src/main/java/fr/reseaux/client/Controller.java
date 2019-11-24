@@ -34,13 +34,19 @@ public class Controller {
     }
 
     public static void closeApp() {
-        Controller.uiController.close();
+        try {
+            Controller.client.echoSocket.close();
+            Controller.uiController.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void printMessage() {
         Vector<Message> messageToPrint = client.getMessageList();
         for (Message message : messageToPrint) {
-            if ("Clear the board <server_action>".equals(message.getContent())) {
+            LOGGER.debug(message.getContent());
+            if ("/clear".equals(message.getContent())) {
                 clearArea();
             } else {
                 Controller.uiController.printMessage(message);

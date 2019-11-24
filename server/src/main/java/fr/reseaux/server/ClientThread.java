@@ -9,8 +9,6 @@ package fr.reseaux.server;
 import java.io.*;
 import java.net.*;
 import java.util.List;
-import java.util.Vector;
-
 import fr.reseaux.common.Message;
 import fr.reseaux.common.ServerRequest;
 import fr.reseaux.common.ServerResponse;
@@ -98,6 +96,20 @@ public class ClientThread
                         username = request.getRequestAttribute("username");
                         password = request.getRequestAttribute("password");
                         Server.connectUser(new User(username, password));
+                        break;
+                    case "addUser":
+                        LOGGER.debug("Requesting add of a user");
+                        String user = request.getRequestAttribute("user"); // Can be used later in case we have admins
+                        String userToAdd = request.getRequestAttribute("username");
+                        boolean success = Server.getMulticastThreadByName(currentGroup).addUser(userToAdd);
+                        String responseContent;
+                        if(success) {
+                            responseContent = "Successfully added user " + userToAdd + " to group.";
+                        } else {
+                            responseContent = "User " + userToAdd + " was already in group or couldn't be added.";
+                        }
+                        response = new ServerResponse(success, responseContent);
+                        outputStream.writeObject(response);
                         break;
                 }
             }
