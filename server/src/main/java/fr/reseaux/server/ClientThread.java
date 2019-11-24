@@ -14,6 +14,7 @@ import java.util.Vector;
 import fr.reseaux.common.Message;
 import fr.reseaux.common.ServerRequest;
 import fr.reseaux.common.ServerResponse;
+import fr.reseaux.common.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,12 +41,13 @@ public class ClientThread
             ObjectInputStream ois = new ObjectInputStream(clientSocket.getInputStream());
             Message message;
             ServerRequest request;
+            String username, password, content;
             while (true) {
                 request = (ServerRequest) ois.readObject();
                 switch (request.getRequestType()) {
                     case "message":
-                        String content = request.getRequestAttribute("content");
-                        String username = request.getRequestAttribute("username");
+                        content = request.getRequestAttribute("content");
+                        username = request.getRequestAttribute("username");
                         message = new Message(content, username);
                         LOGGER.debug("Send a Message");
                         Server.getMulticastThreadByName(currentGroup).addMessage(message);
@@ -92,7 +94,11 @@ public class ClientThread
 
                             }
                         }
-
+                    case "login":
+                        username = request.getRequestAttribute("username");
+                        password = request.getRequestAttribute("password");
+                        Server.connectUser(new User(username, password));
+                        break;
                 }
             }
         } catch (Exception e) {

@@ -1,0 +1,18 @@
+<users>
+    <user>
+        <username>
+            Brice
+        </username>
+        <password>
+            mdp
+        </password>
+    </user>
+    <user>
+        <username>
+            Sophie
+        </username>
+        <password>
+            mdp
+        </password>
+    </user>
+</users>

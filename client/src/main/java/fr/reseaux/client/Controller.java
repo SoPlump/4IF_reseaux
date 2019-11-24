@@ -52,4 +52,8 @@ public class Controller {
     public static void clearArea() {
         uiController.clearArea();
     }
+
+    public boolean connectUser(String username, String password) {
+        return true;
+    }
 }
