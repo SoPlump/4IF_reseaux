@@ -111,6 +111,10 @@ public class ClientThread
                         response = new ServerResponse(success, responseContent);
                         outputStream.writeObject(response);
                         break;
+                    case "createGroup":
+                        LOGGER.debug("Request to create a group");
+                        groupName = request.getRequestAttribute("groupName");
+
                 }
             }
         } catch (Exception e) {

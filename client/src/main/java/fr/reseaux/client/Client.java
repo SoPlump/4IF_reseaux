@@ -169,6 +169,8 @@ public class Client extends Thread {
                     addUserToGroup(msg);
                 } else if (msg.getContent().startsWith("/join")) {
                     joinGroup(msg);
+                } else if (msg.getContent().startsWith("/create")) {
+                    createGroup(msg);
                 }
             } else {
                 this.outputStream.writeObject(new ServerRequest("message", "-content:{" + msg.getContent() + "}-username:{" + username + "}"));
@@ -302,7 +304,7 @@ public class Client extends Thread {
 
     public void joinGroup(Message msg) {
         Pattern patternGroup = Pattern.compile("/join (.+)");
-            Matcher matcherGroup = patternGroup.matcher(msg.getContent());
+        Matcher matcherGroup = patternGroup.matcher(msg.getContent());
         if (matcherGroup.matches()) {
             String group = matcherGroup.group(1);
             joinGroup(group);

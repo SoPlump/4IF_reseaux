@@ -76,11 +76,12 @@ public class Server {
         return null;
     }
 
-
     static void connectUser(User user) {
         if (userList.contains(user)) {
         }
     }
+
+    static void createGroup() {}
 }
 
 
