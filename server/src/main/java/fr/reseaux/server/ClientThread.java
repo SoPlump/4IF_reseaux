@@ -137,6 +137,12 @@ public class ClientThread
                         response = new ServerResponse(success, responseContent);
                         outputStream.writeObject(response);
                         break;
+                    case "disconnect":
+                        username = request.getRequestAttribute("username");
+                        success = Server.disconnect(username);
+                        response = new ServerResponse(success, "");
+                        outputStream.writeObject(response);
+                        break;
 
                 }
             }

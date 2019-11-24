@@ -142,7 +142,11 @@ public class Client extends Thread {
             if (msg.getContent().startsWith("/")) {
 
                 if (msg.getContent().equals("/quit")) {
-                    Controller.closeApp(); //todo : close socket
+                    this.outputStream.writeObject(new ServerRequest("disconnect", "-username:{"+username+"}"));
+                    ServerResponse response = (ServerResponse) inputStream.readObject();
+                    if (response.isSuccess()) {
+                        Controller.closeApp(); //todo : close socket
+                    }
                 } else if (msg.getContent().equals("/clear")) {
                     Controller.clearArea();
                 } else if (msg.getContent().startsWith("/add")) {

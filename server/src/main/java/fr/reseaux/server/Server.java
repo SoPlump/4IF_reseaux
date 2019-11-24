@@ -164,6 +164,16 @@ public class Server {
         }
         return false;
     }
+
+    public static boolean disconnect(String username) {
+        List<User> result = userList.stream()
+                .filter(a -> Objects.equals(a.getUsername(), username))
+                .collect(Collectors.toList());
+        if (result.isEmpty()) return false;
+        result.get(0).setConnected(false);
+        return true;
+
+    }
 }
 
 
