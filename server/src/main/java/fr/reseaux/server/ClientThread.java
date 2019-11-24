@@ -48,7 +48,7 @@ public class ClientThread
                     case "login":
                         username = request.getRequestAttribute("username");
                         password = request.getRequestAttribute("password");
-                        Server.getMulticastThread().connectUser(new User(username, password));
+                        Server.connectUser(new User(username, password));
                 }
             }
         } catch (Exception e) {
