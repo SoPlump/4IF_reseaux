@@ -8,9 +8,12 @@ public class User {
 
     private String password;
 
+    private boolean isConnected;
+
     public User(String username, String password) {
         this.username = username;
         this.password = password;
+        this.isConnected = false;
     }
 
     @Override
@@ -18,13 +21,14 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(username, user.username) &&
+        return isConnected == user.isConnected &&
+                Objects.equals(username, user.username) &&
                 Objects.equals(password, user.password);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(username, password);
+        return Objects.hash(username, password, isConnected);
     }
 
     @Override
@@ -41,5 +45,13 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    public void setConnected(boolean connected) {
+        isConnected = connected;
+    }
+
+    public boolean isConnected() {
+        return isConnected;
     }
 }
