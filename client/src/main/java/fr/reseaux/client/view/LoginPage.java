@@ -1,5 +1,6 @@
 package fr.reseaux.client.view;
 
+import fr.reseaux.common.Message;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -8,6 +9,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+
+import java.io.IOException;
 
 public class LoginPage extends VBox {
 
@@ -40,6 +43,14 @@ public class LoginPage extends VBox {
 
         this.connexionButton.addEventHandler(ActionEvent.ACTION, actionEvent -> {
             this.uiController.connectUser(usernameField.getText(), passwordField.getText());
+        });
+
+        this.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER: {
+                    this.uiController.connectUser(usernameField.getText(), passwordField.getText());
+                }
+            }
         });
 
         this.usernameField.setPromptText("username");

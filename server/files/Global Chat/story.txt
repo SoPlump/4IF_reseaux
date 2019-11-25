@@ -6,27 +6,11 @@ bidule : Allo ?
 bidule : Oui je t'entends
 bidule : Ah cool :)
 bidule : Je switch sur l'autre groupe
-bidule : ok à tout j'arrive
-bidule : Et la
-bidule : ok ptit souci
-bidule : Je dois pas leave ahah
-bidule : oui x)
-bidule : Hi
-bidule : Salut
-bidule : Hi
-bidule : Hello
-bidule : Hello ,
-bidule : Hi hi
-bidule : hi
-bidule : hi there
-bidule : Why hello there
-bidule : Slt
-bidule : Slttt
-bidule : Yop
-bidule : Trop de message
-bidule : Re
-bidule : fzfaf
-bidule : aefqvza
-
-bidule : abc
-Sophie : plop
+Brice : Bonjour
+bidule : Tu aimes le fromage ?
+bidule : Non mais avant de me faire taper je sors
+Brice : Hellow
+Sophie : Né
+Brice : Nice ça marche reste plus qu'a regler les souciss d'unicode
+Brice : che
+spartacus : Bonjour à vous

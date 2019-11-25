@@ -45,6 +45,14 @@ public class RegisterPage extends VBox {
             this.uiController.registerUser(usernameField.getText(), passwordField.getText(), confirmationPasswordField.getText());
         });
 
+        this.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER: {
+                    this.uiController.registerUser(usernameField.getText(), passwordField.getText(), confirmationPasswordField.getText());
+                }
+            }
+        });
+
         this.usernameField.setPromptText("username");
         this.passwordField.setPromptText("password");
         this.confirmationPasswordField.setPromptText("confirm your password");

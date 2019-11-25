@@ -90,7 +90,7 @@ public class UIController {
             switch (event.getCode()) {
                 case ENTER: {
                     LOGGER.info(messageArea.getText());
-                    Message msg = new Message(messageArea.getText(), "bidule");
+                    Message msg = new Message(messageArea.getText(), controller.getClient().getUsername());
                     messageArea.clear();
                     //this.conversationArea.addMessage(msg);
                     try {
@@ -102,6 +102,8 @@ public class UIController {
 
             }
         });
+
+
 
         loadLoginPage();
         //loadRegisterPage();

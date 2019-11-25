@@ -25,6 +25,12 @@ public class Client extends Thread {
 
     private Message lastMsg;
 
+    public void setConnected(boolean connected) {
+        isConnected = connected;
+    }
+
+    private boolean isConnected;
+
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
 
@@ -60,6 +66,7 @@ public class Client extends Thread {
         }
 
         try {
+            this.isConnected = false;
             // creation socket ==> connexion
             this.echoSocket = new Socket(args[0], Integer.parseInt(args[1]));
             this.socIn = new BufferedReader(
@@ -97,8 +104,12 @@ public class Client extends Thread {
         };
 
  */
-
         joinGroup("Global Chat");
+        try {
+            doWrite(new Message("Wrote a Message", "server"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         //joinGroup("Secondary Chat", updater);
         //joinGroup("Third Chat", updater);
         String line;
@@ -107,6 +118,7 @@ public class Client extends Thread {
         try {
             String content;
             while (true) {
+                //LOGGER.info(isConnected);
                 multicastSocket.receive(datagramPacket);
                 content = new String(
                         datagramPacket.getData(),
@@ -120,6 +132,7 @@ public class Client extends Thread {
                 // update the UI
                 Platform.runLater(updater);
             }
+
         } catch (Exception e) {
             LOGGER.error(e);
         }
@@ -142,7 +155,7 @@ public class Client extends Thread {
             if (msg.getContent().startsWith("/")) {
 
                 if (msg.getContent().equals("/quit")) {
-                    this.outputStream.writeObject(new ServerRequest("disconnect", "-username:{"+username+"}"));
+                    this.outputStream.writeObject(new ServerRequest("disconnect", "-username:{" + username + "}"));
                     ServerResponse response = (ServerResponse) inputStream.readObject();
                     if (response.isSuccess()) {
                         Controller.closeApp(); //todo : close socket
@@ -159,7 +172,7 @@ public class Client extends Thread {
 
                 }
             } else {
-                this.outputStream.writeObject(new ServerRequest("message", "-content:{" + msg.getContent() + "}-username:{" + username + "}"));
+                this.outputStream.writeObject(new ServerRequest("message", "-content:{" + msg.getContent() + "}-username:{" + msg.getUsername() + "}"));
             }
         } catch (Exception e) {
             LOGGER.error(e);
@@ -194,12 +207,16 @@ public class Client extends Thread {
                 multicastAddress = (Inet4Address) Inet4Address.getByName(address);
 
                 if (currentAddress != null) {
+                    //Message leaveMessage = new Message(username + " vient de se déconnecter.", "server");
+                    //doWrite(leaveMessage);
                     multicastSocket.leaveGroup(currentAddress);
                 } else {
                     multicastSocket = new MulticastSocket(multicastPort);
                 }
                 currentAddress = multicastAddress;
                 multicastSocket.joinGroup(multicastAddress);
+                Message leaveMessage = new Message(username + " vient de se connecter.", "server");
+                doWrite(leaveMessage);
 
                 messageList.add(new Message("/clear", "server"));
                 LOGGER.info("Sending a request to get the story");
@@ -234,11 +251,14 @@ public class Client extends Thread {
     public boolean connectUser(User user) {
         try {
             LOGGER.info("Trying to connect user");
-            ServerRequest request = new ServerRequest("login", "-username:{"+user.getUsername()+"}-password:{"+user.getPassword()+"}");
+            ServerRequest request = new ServerRequest("login", "-username:{" + user.getUsername() + "}-password:{" + user.getPassword() + "}");
             outputStream.writeObject(request);
             ServerResponse response = (ServerResponse) this.inputStream.readObject();
 
             if (response.isSuccess()) {
+                LOGGER.debug("Connection acquired");
+                this.isConnected = true;
+                LOGGER.info(isConnected);
                 this.username = user.getUsername();
                 joinGroup("Global Chat");
                 return true;
@@ -252,7 +272,7 @@ public class Client extends Thread {
     public boolean registerUser(User user) {
         try {
             LOGGER.info("Trying to register user");
-            ServerRequest request = new ServerRequest("register", "-username:{"+user.getUsername()+"}-password:{"+user.getPassword()+"}");
+            ServerRequest request = new ServerRequest("register", "-username:{" + user.getUsername() + "}-password:{" + user.getPassword() + "}");
             outputStream.writeObject(request);
             ServerResponse response = (ServerResponse) this.inputStream.readObject();
 
@@ -280,7 +300,7 @@ public class Client extends Thread {
                 ServerRequest addRequest = new ServerRequest("addUser", "-user:{" + username + "}-username:{"
                         + userToAdd + "}");
                 this.outputStream.writeObject(addRequest);
-                ServerResponse response = (ServerResponse)this.inputStream.readObject();
+                ServerResponse response = (ServerResponse) this.inputStream.readObject();
                 LOGGER.debug(response.getContent());
             } else {
                 LOGGER.debug("Pas de nom entré pour l'ajout");
@@ -307,7 +327,7 @@ public class Client extends Thread {
             Matcher matcherGroup = patternGroup.matcher(msg.getContent());
             if (matcherGroup.matches()) {
                 String group = matcherGroup.group(1);
-                ServerRequest requestCreate = new ServerRequest("createGroup", "-groupName:{" + group + "}-username:{"+username+"}");
+                ServerRequest requestCreate = new ServerRequest("createGroup", "-groupName:{" + group + "}-username:{" + username + "}");
                 outputStream.writeObject(requestCreate);
                 ServerResponse response = (ServerResponse) inputStream.readObject();
                 LOGGER.debug(response.getContent());

@@ -76,9 +76,11 @@ public class MulticastThread
             while (true) {
                 if (!messageQueue.isEmpty()) {
                     msg = messageQueue.poll();
-                    addMessageToStory(msg);
-                    DatagramPacket datagramPacket = new DatagramPacket(msg.toString().getBytes(), msg.toString().getBytes().length, multicastAddress, multicastPort);
-                    multicastSocket.send(datagramPacket);
+                    if(!msg.getContent().contains("null vient de se connecter")) {
+                        addMessageToStory(msg);
+                        DatagramPacket datagramPacket = new DatagramPacket(msg.toString().getBytes("UTF-8"), msg.toString().getBytes().length, multicastAddress, multicastPort);
+                        multicastSocket.send(datagramPacket);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -91,6 +93,9 @@ public class MulticastThread
     }
 
     public void addMessageToStory(Message message) {
+        if ("server".equals(message.getUsername())) {
+            return;
+        }
         HistoryFactory historyFactory = new HistoryFactory();
         historyFactory.addMessageToStory(message, new File("files/" + groupName + "/story.txt"));
     }
