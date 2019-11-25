@@ -114,33 +114,24 @@ public class ClientThread
                             outputStream.writeObject(response);
                             break;
                         }
-                        boolean success = Server.getMulticastThreadByName(currentGroup).addUser(userToAdd);
-                        String responseContent;
-                        if(success) {
-                            responseContent = "Successfully added user " + userToAdd + " to group.";
-                        } else {
-                            responseContent = "User " + userToAdd + " was already in group or couldn't be added.";
-                        }
-                        response = new ServerResponse(success, responseContent);
+                        response = Server.getMulticastThreadByName(currentGroup).addUser(userToAdd);
                         outputStream.writeObject(response);
                         break;
                     case "createGroup":
                         LOGGER.debug("Request to create a group");
                         groupName = request.getRequestAttribute("groupName");
                         user = request.getRequestAttribute("username");
-                        success = Server.addGroup(groupName, user);
-                        if (success) {
-                            responseContent = "Successfully created group " + groupName;
-                        } else {
-                            responseContent = "Group " + groupName + " was already a group or couldn't be created.";
-                        }
-                        response = new ServerResponse(success, responseContent);
+                        response = Server.addGroup(groupName, user);
                         outputStream.writeObject(response);
                         break;
                     case "disconnect":
                         username = request.getRequestAttribute("username");
-                        success = Server.disconnect(username);
-                        response = new ServerResponse(success, "");
+                        boolean success = Server.disconnect(username);
+                        if (success) {
+                            response = new ServerResponse(true, "");
+                        } else {
+                            response = new ServerResponse(false, "Your disconnection request has been aborted. Please retry.");
+                        }
                         outputStream.writeObject(response);
                         break;
 

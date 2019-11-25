@@ -49,6 +49,8 @@ public class UIController {
 
     private RegisterPage registerPage;
 
+    private StatusBar statusBar;
+
     public UIController(Stage stage, Controller controller) {
         this.stage = stage;
 
@@ -57,6 +59,7 @@ public class UIController {
         this.conversationArea = new ConversationArea();
         this.messageArea = new TextArea();
         this.controller = controller;
+        this.statusBar = new StatusBar();
 
         // Login page
         this.loginPage = new LoginPage(this);
@@ -103,6 +106,9 @@ public class UIController {
             }
         });
 
+        //this.mainPane.setBottom(this.conversationArea);
+        //this.mainPane.setBottom(this.statusBar);
+
 
 
         loadLoginPage();
@@ -127,6 +133,7 @@ public class UIController {
 
     private void loadConversationPage() {
         this.mainPane.setCenter(conversationArea);
+        this.mainPane.setTop(statusBar);
         this.bottomFlow.getChildren().add(messageArea);
         this.bottomFlow.getChildren().add(sendButton);
     }
@@ -163,5 +170,17 @@ public class UIController {
         else {
             this.registerPage.printRegistrationError("Please enter the same password.");
         }
+    }
+
+    public void printStatus(String message) {
+        this.statusBar.setStatus(message);
+    }
+
+    /**
+     * Displays an error message in the {@link StatusBar}
+     * @param error the error message to print
+     */
+    public void printError(String error) {
+        this.statusBar.setError(error);
     }
 }

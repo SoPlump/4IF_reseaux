@@ -105,11 +105,7 @@ public class Client extends Thread {
 
  */
         joinGroup("Global Chat");
-        try {
-            doWrite(new Message("Wrote a Message", "server"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Controller.printStatus("Connected as " + username);
         //joinGroup("Secondary Chat", updater);
         //joinGroup("Third Chat", updater);
         String line;
@@ -168,8 +164,6 @@ public class Client extends Thread {
                     joinGroup(msg);
                 } else if (msg.getContent().startsWith("/create")) {
                     createGroup(msg);
-                } else if (msg.getContent().equals("/info")) {
-
                 }
             } else {
                 this.outputStream.writeObject(new ServerRequest("message", "-content:{" + msg.getContent() + "}-username:{" + msg.getUsername() + "}"));
@@ -193,7 +187,7 @@ public class Client extends Thread {
 
     public void joinGroup(String groupName) {
         try {
-            LOGGER.debug("Connection requested to " + groupName);
+            Controller.printStatus("Connection requested to " + groupName);
             ServerRequest connectRequest = new ServerRequest("connectToGroup", "-username:{" + username + "}-groupName:{" + groupName + "}");
             outputStream.writeObject(connectRequest);
             ServerResponse response = (ServerResponse) this.inputStream.readObject();
@@ -220,8 +214,8 @@ public class Client extends Thread {
 
                 messageList.add(new Message("/clear", "server"));
                 LOGGER.info("Sending a request to get the story");
-                lastMsg = new Message("Connected as " + username, "server");
-                messageList.add(lastMsg);
+                //lastMsg = new Message("Connected as " + username, "server");
+                //messageList.add(lastMsg);
 
                 Platform.runLater(updater);
                 ServerRequest storyRequest = new ServerRequest("getStory", "");
@@ -238,6 +232,7 @@ public class Client extends Thread {
                     //  break;
                 }
                 if (noGroupJoined) noGroupJoined = false;
+                Controller.printStatus("Joined group " + groupName);
                 // }
             } else {
                 LOGGER.debug(response.getContent());
@@ -301,9 +296,13 @@ public class Client extends Thread {
                         + userToAdd + "}");
                 this.outputStream.writeObject(addRequest);
                 ServerResponse response = (ServerResponse) this.inputStream.readObject();
-                LOGGER.debug(response.getContent());
+                if (response.isSuccess()) {
+                    Controller.printStatus(response.getContent());
+                } else {
+                    Controller.printError(response.getContent());
+                }
             } else {
-                LOGGER.debug("Pas de nom entré pour l'ajout");
+                Controller.printError("Enter a username to add to the group.");
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -317,7 +316,7 @@ public class Client extends Thread {
             String group = matcherGroup.group(1);
             joinGroup(group);
         } else {
-            LOGGER.debug("Pas de nom entré pour le changement de groupe");
+            Controller.printError("Enter a group name to join.");
         }
     }
 
@@ -330,9 +329,13 @@ public class Client extends Thread {
                 ServerRequest requestCreate = new ServerRequest("createGroup", "-groupName:{" + group + "}-username:{" + username + "}");
                 outputStream.writeObject(requestCreate);
                 ServerResponse response = (ServerResponse) inputStream.readObject();
-                LOGGER.debug(response.getContent());
+                if (response.isSuccess()) {
+                    Controller.printStatus(response.getContent());
+                } else {
+                    Controller.printError(response.getContent());
+                }
             } else {
-                LOGGER.debug("Pas de nom entré pour la création de groupe");
+                Controller.printError("Enter a group name to create");
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();

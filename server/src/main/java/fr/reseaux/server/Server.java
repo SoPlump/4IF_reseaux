@@ -139,16 +139,23 @@ public class Server {
 
     }
 
-    public static boolean addGroup(String groupName, String username) {
+    public static ServerResponse addGroup(String groupName, String username) {
         for (MulticastThread group : multicastList) {
-            if (group.getGroupName().equals(groupName)) return false;
+            if (group.getGroupName().equals(groupName)) {
+                return new ServerResponse(false, "Group " + groupName + " already exists.");
+            }
         }
         MulticastThreadFactory multicastThreadFactory = new MulticastThreadFactory();
         String ip = grantIp();
         if (multicastThreadFactory.addGroup(new File("./src/main/resources/groups.xml"), groupName, ip, multicastPort, multicastList)) {
-            return getMulticastThreadByName(groupName).addUser(username);
+            boolean success =  getMulticastThreadByName(groupName).addUser(username).isSuccess();
+            if (success) {
+                return new ServerResponse(true, "Group " + groupName + " successfully created.");
+            } else {
+                return new ServerResponse(false, "Group " + groupName + " has been created but you couldn't be added as member, please contact your administartor.");
+            }
         }
-        return false;
+        return new ServerResponse(false, "Group couldn't be created.");
     }
 
     private static String grantIp() {

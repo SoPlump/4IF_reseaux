@@ -69,4 +69,12 @@ public class Controller {
     public boolean registerUser(String username, String password) {
         return client.registerUser(new User(username, password));
     }
+
+    public static void printStatus(String text) {
+        uiController.printStatus(text);
+    }
+
+    public static void printError(String text) {
+        uiController.printError(text);
+    }
 }

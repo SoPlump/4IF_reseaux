@@ -14,3 +14,5 @@ Sophie : Né
 Brice : Nice ça marche reste plus qu'a regler les souciss d'unicode
 Brice : che
 spartacus : Bonjour à vous
+Brice : Bonjour
+Brice : Why hello there

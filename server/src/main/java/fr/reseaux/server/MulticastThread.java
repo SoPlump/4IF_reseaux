@@ -7,6 +7,7 @@
 package fr.reseaux.server;
 
 import fr.reseaux.common.Message;
+import fr.reseaux.common.ServerResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -120,7 +121,7 @@ public class MulticastThread
         return false;
     }
 
-    public boolean addUser(String username) {
+    public ServerResponse addUser(String username) {
         WhitelistFactory whitelistFactory = new WhitelistFactory();
         return whitelistFactory.addUser(whitelist, new File("files/" + groupName + "/whitelist.txt"), username);
     }

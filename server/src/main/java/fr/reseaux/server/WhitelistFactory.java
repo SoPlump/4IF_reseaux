@@ -1,5 +1,7 @@
 package fr.reseaux.server;
 
+import fr.reseaux.common.ServerResponse;
+
 import java.io.*;
 import java.util.Set;
 import java.util.Vector;
@@ -8,19 +10,19 @@ import java.util.concurrent.ConcurrentSkipListSet;
 public class WhitelistFactory {
 
 
-    public boolean addUser(Set<String> whitelist, File file, String username) {
+    public ServerResponse addUser(Set<String> whitelist, File file, String username) {
         try {
             if (whitelist.add(username)) {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
                 writer.append(username + '\n');
                 writer.close();
-                return true;
+                return new ServerResponse(true, "Client successfully added to group.");
             } else {
-                return false;
+                return new ServerResponse(false, "User " + username + " already in group");
             }
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
+            return new ServerResponse(false, "User " + username + " couldn't be added.");
         }
 
 
