@@ -34,42 +34,7 @@ public class RemoteThread extends Thread {
         if (remoteSocket.isClosed()){
             return;
         }
-        parseRequest();
-    }
-
-    private Request parseRequest() {
-        //try {
-            parseHeader();
-            // read the data sent. We basically ignore it,
-            // stop reading once a blank line is hit. This
-            // blank line signals the end of the client HTTP
-            // headers.
-            /*
-            String str = ".";
-            while (!str.equals("")) {
-                str = inStream.readLine();
-            }
-            */
-
-
-
-            // Send the response
-            //out.println("HTTP/1.0 200 OK");
-            //out.println("Content-Type: text/html");
-            //out.println("Server: Bot");
-            //// this blank line signals the end of the headers
-            //out.println("");
-            //// Send the HTML page
-            //out.println("<h1>Welcome to the Ultra Mini-WebServer</h1>");
-            //out.flush();
-            // Send the headers
-            //remoteSocket.close();
-        /*} catch (IOException e) {
-            e.printStackTrace();
-        }
-
-         */
-        return null;
+        parseHeader();
     }
 
     private void parseHeader() {
@@ -141,30 +106,42 @@ public class RemoteThread extends Thread {
     }
 
     private void httpGetMethod() {
+        Response response = new Response();
         try {
-            Response response = new Response();
             LOGGER.debug(request.getPath());
+            if(request.getPath().trim().equals("/")) {
+                request.setPath("/index.html");
+            }
 
             File file = new File("src/main/resources" + request.getPath());
-            LOGGER.debug(file.getAbsolutePath());
-            BufferedReader fileStream = new BufferedReader(new FileReader(file));
+            if (file.exists() && file.getAbsolutePath().endsWith("html")) {
+                LOGGER.debug(file.getAbsolutePath());
+                BufferedReader fileStream = new BufferedReader(new FileReader(file));
 
-            response.addHeader("Content-Type: text/html");
-            response.addHeader("Server: Bot");
-            StringBuilder body = new StringBuilder();
-            String line;
-            while ((line = fileStream.readLine()) != null) {
-                body.append(line + "\n");
+                response.addHeader("Content-Type: text/html");
+                response.addHeader("Server: Bot");
+                StringBuilder body = new StringBuilder();
+                String line;
+                while ((line = fileStream.readLine()) != null) {
+                    body.append(line + "\n");
+                }
+                LOGGER.debug(body.toString());
+                response.setStatusCode(200);
+                response.setResponseBody(body.toString().getBytes());
+            } else {
+                response.setStatusCode(404);
+                response.setResponseBody(("<h1>404 Not Found</h1>").getBytes());
             }
-            LOGGER.debug(body.toString());
-            response.setStatusCode(200);
-            response.setResponseBody(body.toString().getBytes());
+        } catch (IOException e) {
+            response.setStatusCode(404);
+            response.setResponseBody(("<h1>404 Not Found</h1>").getBytes());
+        } catch (Exception e) {
+            response.setStatusCode(500);
+            response.setResponseBody(("<h1>500 Internal Server Error</h1>").getBytes());
+        } finally {
             LOGGER.debug(response);
             outStream.println(response);
             outStream.flush();
-
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
         }
     }
 }
