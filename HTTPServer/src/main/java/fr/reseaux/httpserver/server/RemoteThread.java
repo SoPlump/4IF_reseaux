@@ -2,11 +2,10 @@ package fr.reseaux.httpserver.server;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.util.IOUtils;
 
 import javax.imageio.ImageIO;
+import java.awt.image.LookupOp;
 import java.io.*;
-import java.lang.reflect.Array;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.security.InvalidParameterException;
@@ -39,7 +38,7 @@ public class RemoteThread extends Thread {
     @Override
     public void run() {
         try {
-            if (remoteSocket.isClosed()){
+            if (remoteSocket.isClosed()) {
                 return;
             }
             parseHeader();
@@ -55,7 +54,7 @@ public class RemoteThread extends Thread {
 
             // Parsing the first line
 
-            LOGGER.debug("Parsing request");
+            //LOGGER.debug("Parsing request");
 
             String firstLine = inStream.readLine();
             if (firstLine == null) {
@@ -79,20 +78,23 @@ public class RemoteThread extends Thread {
                 line = inStream.readLine();
             }
 
+            LOGGER.debug("HEADER : " + request.getRequestHeader());
+
             // Handling request type
 
-            LOGGER.debug("Arrival on Switch");
+            //LOGGER.debug("Arrival on Switch");
             switch (splitFirstLine[0]) {
-                case "GET" :
+                case "GET":
                     httpGetMethod();
                     break;
-                case "POST" :
+                case "POST":
                     parseBody();
+                    httpPostMethod();
                     break;
-                case "PUT" :
+                case "PUT":
 //                    httpPutMethod();
                     break;
-                case "DELETE" :
+                case "DELETE":
                     break;
             }
         } catch (Exception e) {
@@ -102,16 +104,16 @@ public class RemoteThread extends Thread {
 
     private void parseBody() {
         try {
-            String line = null;
-            line = inStream.readLine();
             int contentLength = Integer.parseInt(request.getRequestHeader().get("Content-Length"));
             StringBuilder body = new StringBuilder();
 
-            for (int i = 0 ; i < contentLength ; ++i) {
-                body.append(inStream.read());
+            for (int i = 0; i < contentLength; ++i) {
+                body.append((char) inStream.read());
             }
 
             request.setRequestBody(body.toString());
+
+            LOGGER.debug("BODY : " + body.toString());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -122,7 +124,7 @@ public class RemoteThread extends Thread {
         Response response = new Response();
         try {
             LOGGER.debug(request.getPath());
-            if(request.getPath().trim().equals("/")) {
+            if (request.getPath().trim().equals("/")) {
                 request.setPath("/index.html");
             }
 
@@ -154,7 +156,8 @@ public class RemoteThread extends Thread {
         } catch (IOException e) {
             response.setStatusCode(404);
             response.setResponseBody(("<h1>404 Not Found</h1>").getBytes());
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             response.setStatusCode(500);
             response.setResponseBody(("<h1>500 Internal Server Error</h1>").getBytes());
         } finally {
@@ -167,6 +170,26 @@ public class RemoteThread extends Thread {
             } catch (IOException e) {
                 LOGGER.error(e.getMessage(), e);
             }
+        }
+    }
+
+    private void httpPostMethod() {
+        try {
+            Response response = new Response();
+
+            response.addHeader("Content-Type: text/html");
+            response.addHeader("Server: Bot");
+
+            String body = "";
+
+            response.setStatusCode(200);
+            response.setResponseBody(body.getBytes());
+
+            outStream.println(response);
+            outStream.flush();
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
         }
     }
 /*
