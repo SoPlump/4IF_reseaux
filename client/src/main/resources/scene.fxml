@@ -1,68 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckMenuItem?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
-<?import javafx.scene.layout.TilePane?>
-<BorderPane fx:id="mainPane" prefHeight="400.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
-    <top>
-        <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
-            <menus>
-                <Menu mnemonicParsing="false" text="Fichier">
-                    <MenuItem fx:id="openMap" mnemonicParsing="false" text="Ouvrir un plan de ville"/>
-                    <MenuItem fx:id="openDeliveryMap" mnemonicParsing="false" text="Ouvrir un plan de livraison"/>
-                    <MenuItem fx:id="exportRound" mnemonicParsing="false" text="Exporter le plan de livraison"/>
-                    <MenuItem fx:id="close" mnemonicParsing="false" text="Fermer"/>
-                </Menu>
+<?import javafx.scene.layout.VBox?>
 
-                <Menu mnemonicParsing="false" text="Édition">
-                    <MenuItem fx:id="undoItem" mnemonicParsing="false" text="Annuler"/>
-                    <MenuItem fx:id="redoItem" mnemonicParsing="false" text="Rétablir"/>
-                </Menu>
-
-                <Menu text="Affichage">
-                    <MenuItem fx:id="autoZoomItem" text="Auto zoom"/>
-                    <MenuItem fx:id="zoomInItem" text="Zoomer"/>
-                    <MenuItem fx:id="zoomOutItem" text="Dézoomer"/>
-                    <CheckMenuItem fx:id="darkModeToggle" text="Mode sombre"/>
-                </Menu>
-
-                <Menu mnemonicParsing="false" text="Outils">
-                    <MenuItem fx:id="computeRoundItem" text="Calculer l'itinéraire"/>
-                    <MenuItem fx:id="addDeliveryItem" mnemonicParsing="false" text="Ajouter une livraison"/>
-                    <MenuItem fx:id="deleteDeliveryItem" mnemonicParsing="false" text="Supprimer une livraison"/>
-                    <MenuItem fx:id="editLocationItem" mnemonicParsing="false" text="Modifier lieu"/>
-                    <MenuItem fx:id="editSequenceItem" mnemonicParsing="false" text="Modifier ordre"/>
-                </Menu>
-            </menus>
-        </MenuBar>
-    </top>
-    <center>
-    </center>
-   <right>
-      <BorderPane fx:id="rightPane" prefHeight="227.0" prefWidth="455.0" BorderPane.alignment="CENTER">
-         <center>
-         </center>
-         <bottom>
-             <FlowPane prefHeight="0.0" prefWidth="0.0" BorderPane.alignment="CENTER">
-                 <Button fx:id="addDelivery" mnemonicParsing="false" text="Ajouter une livraison"/>
-                 <Button fx:id="deleteDelivery" mnemonicParsing="false" text="Supprimer une livraison"/>
-                 <Button fx:id="editLocation" mnemonicParsing="false" text="Modifier lieu"/>
-                 <Button fx:id="editSequence" mnemonicParsing="false" text="Modifier ordre"/>
-             </FlowPane>
-         </bottom>
-         <top>
-             <TilePane fx:id="tilePane" alignment="TOP_CENTER" maxWidth="200" prefWidth="200.0"
-                       BorderPane.alignment="CENTER" hgap="100">
-                 <Button fx:id="computeRound" text="Calculer l'itinéraire"/>
-             </TilePane>
-         </top>
-      </BorderPane>
-   </right>
+<BorderPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="446.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <bottom>
    </bottom>
+   <center>
+   </center>
+   <bottom>
+      <FlowPane fx:id="bottomFlow" prefHeight="60.0" prefWidth="290.0" BorderPane.alignment="CENTER">
+         <children>
+         </children></FlowPane>
+   </bottom>
+   <center>
+   </center>
 </BorderPane>

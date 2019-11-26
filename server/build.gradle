@@ -16,4 +16,9 @@ dependencies {
 
 application {
     mainClassName = 'fr.reseaux.server.Server'
+
+    run {
+        standardInput = System.in
+        args = ["1234"]
+    }
 }

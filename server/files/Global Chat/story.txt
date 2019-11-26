@@ -1,0 +1,18 @@
+308 : Bonjour a tous dans ce groupe principal
+38 : quit
+bidule : Hello
+bidule : Salutations ?
+bidule : Allo ?
+bidule : Oui je t'entends
+bidule : Ah cool :)
+bidule : Je switch sur l'autre groupe
+Brice : Bonjour
+bidule : Tu aimes le fromage ?
+bidule : Non mais avant de me faire taper je sors
+Brice : Hellow
+Sophie : Né
+Brice : Nice ça marche reste plus qu'a regler les souciss d'unicode
+Brice : che
+spartacus : Bonjour à vous
+Brice : Bonjour
+Brice : Why hello there
