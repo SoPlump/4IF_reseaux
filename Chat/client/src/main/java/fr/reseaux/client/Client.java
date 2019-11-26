@@ -211,7 +211,6 @@ public class Client extends Thread {
                 multicastSocket.joinGroup(multicastAddress);
                 Message leaveMessage = new Message(username + " vient de se connecter.", "server");
                 doWrite(leaveMessage);
-
                 messageList.add(new Message("/clear", "server"));
                 LOGGER.info("Sending a request to get the story");
                 //lastMsg = new Message("Connected as " + username, "server");

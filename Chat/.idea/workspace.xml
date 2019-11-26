@@ -2,6 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ea090a41-a1c1-41d2-9c9e-cf470fc372bc" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/client/src/main/java/fr/reseaux/client/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/fr/reseaux/client/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/java/fr/reseaux/client/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/fr/reseaux/client/Controller.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/files/Another Chat/story.txt" beforeDir="false" afterPath="$PROJECT_DIR$/server/files/Another Chat/story.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/files/Another Chat/whitelist.txt" beforeDir="false" afterPath="$PROJECT_DIR$/server/files/Another Chat/whitelist.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/files/Global Chat/story.txt" beforeDir="false" afterPath="$PROJECT_DIR$/server/files/Global Chat/story.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -70,7 +74,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="IgnoredFileRootStore">
     <option name="generatedRoots">
@@ -80,6 +84,7 @@
     </option>
   </component>
   <component name="ProjectId" id="1TvT257xcXFwT6N9qXlPYfjH5Aa" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
     <property name="last_directory_selection" value="$PROJECT_DIR$/client/src/main/java" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/common/src/main/resources" />

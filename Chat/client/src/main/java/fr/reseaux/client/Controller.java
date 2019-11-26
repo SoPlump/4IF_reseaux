@@ -71,10 +71,18 @@ public class Controller {
     }
 
     public static void printStatus(String text) {
-        uiController.printStatus(text);
+        try {
+            uiController.printStatus(text);
+        } catch (NullPointerException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
     }
 
     public static void printError(String text) {
-        uiController.printError(text);
+        try {
+            uiController.printError(text);
+        } catch (NullPointerException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
     }
 }
