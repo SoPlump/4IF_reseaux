@@ -2,9 +2,13 @@ package fr.reseaux.httpserver.server;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.util.IOUtils;
 
+import javax.imageio.ImageIO;
 import java.io.*;
+import java.lang.reflect.Array;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.security.InvalidParameterException;
 
 public class RemoteThread extends Thread {
@@ -19,11 +23,14 @@ public class RemoteThread extends Thread {
 
     private PrintWriter outStream;
 
+    private DataOutputStream dataOutStream;
+
     public RemoteThread(Socket remoteSocket) {
         this.remoteSocket = remoteSocket;
         try {
             this.inStream = new BufferedReader(new InputStreamReader(remoteSocket.getInputStream()));
             this.outStream = new PrintWriter(remoteSocket.getOutputStream());
+            this.dataOutStream = new DataOutputStream(remoteSocket.getOutputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -31,10 +38,15 @@ public class RemoteThread extends Thread {
 
     @Override
     public void run() {
-        if (remoteSocket.isClosed()){
-            return;
+        try {
+            if (remoteSocket.isClosed()){
+                return;
+            }
+            parseHeader();
+            remoteSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        parseHeader();
     }
 
     private void parseHeader() {
@@ -78,12 +90,13 @@ public class RemoteThread extends Thread {
                     parseBody();
                     break;
                 case "PUT" :
+//                    httpPutMethod();
                     break;
                 case "DELETE" :
                     break;
             }
         } catch (Exception e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
         }
     }
 
@@ -114,20 +127,26 @@ public class RemoteThread extends Thread {
             }
 
             File file = new File("src/main/resources" + request.getPath());
-            if (file.exists() && file.getAbsolutePath().endsWith("html")) {
+            if (file.exists()) {
                 LOGGER.debug(file.getAbsolutePath());
                 BufferedReader fileStream = new BufferedReader(new FileReader(file));
 
-                response.addHeader("Content-Type: text/html");
+                if (ImageIO.read(file) != null) {
+                    response.addHeader("Content-Type: image/png");
+                } else {
+                    response.addHeader("Content-type: text/html");
+                }
                 response.addHeader("Server: Bot");
-                StringBuilder body = new StringBuilder();
-                String line;
+                //StringBuilder body = new StringBuilder();
+                response.setResponseBody(Files.readAllBytes(file.toPath()));
+                /*String line;
                 while ((line = fileStream.readLine()) != null) {
                     body.append(line + "\n");
                 }
                 LOGGER.debug(body.toString());
                 response.setStatusCode(200);
-                response.setResponseBody(body.toString().getBytes());
+                response.setResponseBody(body.toString().getBytes());*/
+
             } else {
                 response.setStatusCode(404);
                 response.setResponseBody(("<h1>404 Not Found</h1>").getBytes());
@@ -139,9 +158,31 @@ public class RemoteThread extends Thread {
             response.setStatusCode(500);
             response.setResponseBody(("<h1>500 Internal Server Error</h1>").getBytes());
         } finally {
-            LOGGER.debug(response);
-            outStream.println(response);
-            outStream.flush();
+            //LOGGER.debug(response);
+            try {
+                LOGGER.debug(response.getByteResponse().length);
+                dataOutStream.write(response.getByteResponse(), 0, response.toString().getBytes().length);
+                dataOutStream.flush();
+                dataOutStream.close();
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
     }
+/*
+    public void httpPutMethod() {
+        Response response = new Response();
+        try {
+            LOGGER.debug(request.getPath());
+            if (request.getPath().trim().equals("/")) {
+                request.setPath("/index.html");
+            }
+
+            File file =
+        } catch () {
+
+        }
+
+    }
+*/
 }
