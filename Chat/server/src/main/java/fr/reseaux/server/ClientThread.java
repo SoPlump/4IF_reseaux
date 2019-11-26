@@ -141,6 +141,11 @@ public class ClientThread
                         Set<String> userList = Server.getWhitelist(groupName);
                         LOGGER.debug("USER LIST : " + userList);
                         outputStream.writeObject(userList);
+                        break;
+                    case "groupList":
+                        List<String> groupList = Server.getGroups();
+                        outputStream.writeObject(groupList);
+                        break;
 
 
                 }

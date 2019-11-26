@@ -56,6 +56,8 @@ public class UIController {
 
     private UserListArea userListArea;
 
+    private GroupListArea groupListArea;
+
     public UIController(Stage stage, Controller controller) {
         this.stage = stage;
 
@@ -68,6 +70,7 @@ public class UIController {
         this.groupName = new Label();
         this.leftFlow = new FlowPane();
         this.userListArea = new UserListArea();
+        this.groupListArea = new GroupListArea();
 
         // Login page
         this.loginPage = new LoginPage(this);
@@ -151,6 +154,7 @@ public class UIController {
         this.mainPane.setLeft(leftFlow);
         this.leftFlow.getChildren().add(groupName);
         this.leftFlow.getChildren().add(userListArea);
+        this.leftFlow.getChildren().add(groupListArea);
     }
 
     public void loadRegisterPage() {
@@ -223,6 +227,10 @@ public class UIController {
 
     public void clearUsersArea() {
         this.userListArea.clearArea();
+    }
+
+    public void addGroup(String groupName) {
+        this.groupListArea.addGroup(groupName);
     }
 }
 

@@ -70,6 +70,10 @@ public class Controller {
         uiController.clearUsersArea();
     }
 
+    public static void addGroup(String groupName) {
+        uiController.addGroup(groupName);
+    }
+
     public boolean connectUser(String username, String password) {
         return client.connectUser(new User(username, password));
     }

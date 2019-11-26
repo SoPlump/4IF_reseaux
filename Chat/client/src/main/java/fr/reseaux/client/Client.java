@@ -105,6 +105,16 @@ public class Client extends Thread {
         joinGroup("Global Chat");
         currentGroup = "Global Chat";
         Controller.printStatus("Connected as " + username);
+        ServerRequest getGroupList = new ServerRequest("groupList", "");
+        try {
+            outputStream.writeObject(getGroupList);
+            List<String> groupList = (List<String>) inputStream.readObject();
+            for (String groupName : groupList) {
+                Controller.addGroup(groupName);
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         //joinGroup("Secondary Chat", updater);
         //joinGroup("Third Chat", updater);
         String line;
@@ -221,7 +231,6 @@ public class Client extends Thread {
                 outputStream.writeObject(userlistRequest);
                 Set<String> whitelist = (Set<String>) inputStream.readObject();
                 Controller.clearUsersArea();
-                Controller.addUsers("");
                 for (String username : whitelist) {
                     Controller.addUsers(username);
                 }
@@ -340,8 +349,7 @@ public class Client extends Thread {
                 outputStream.writeObject(requestCreate);
                 ServerResponse response = (ServerResponse) inputStream.readObject();
                 if (response.isSuccess()) {
-                    Controller.clearUsersArea();
-                    Controller.addUsers(username);
+                    Controller.addGroup(group);
                     Controller.printStatus(response.getContent());
                 } else {
                     Controller.printError(response.getContent());

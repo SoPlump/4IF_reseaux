@@ -194,6 +194,14 @@ public class Server {
             return getMulticastThreadByName(groupName).getWhitelist();
         }
     }
+
+    public static List<String> getGroups() {
+        List<String> groupList = new Vector<>();
+        for (MulticastThread multicastThread : multicastList) {
+            groupList.add(multicastThread.getGroupName());
+        }
+        return groupList;
+    }
 }
 
 
