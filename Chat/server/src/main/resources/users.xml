@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><users>
+    <user>
+        <username>
+            Brice
+        </username>
+        <password>
+            mdp
+        </password>
+    </user>
+    <user>
+        <username>
+            Sophie
+        </username>
+        <password>
+            mdp
+        </password>
+    </user>
+    <user>
+        <username>Mathieu</username>
+        <password>mdp</password>
+    </user>
+    <user>
+        <username>Felix</username>
+        <password>mdp</password>
+    </user>
+<user><username>Pacome</username><password>mdp</password></user><user><username>LaraClette</username><password>fromage</password></user><user><username>spartacus</username><password>nekomiaou</password></user></users>
