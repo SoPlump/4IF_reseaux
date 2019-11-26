@@ -79,7 +79,6 @@ public class Response {
             response.append(key + ": " +responseHeader.get(key) +"\n");
         }
         response.append("\n");
-        response.append(new String(responseBody));
         return response.toString();
     }
 }

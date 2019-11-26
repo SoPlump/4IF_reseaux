@@ -10,6 +10,7 @@ import java.lang.reflect.Array;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.security.InvalidParameterException;
+import java.util.regex.Pattern;
 
 public class RemoteThread extends Thread {
 
@@ -39,7 +40,7 @@ public class RemoteThread extends Thread {
     @Override
     public void run() {
         try {
-            if (remoteSocket.isClosed()){
+            if (remoteSocket.isClosed()) {
                 return;
             }
             parseHeader();
@@ -83,16 +84,16 @@ public class RemoteThread extends Thread {
 
             LOGGER.debug("Arrival on Switch");
             switch (splitFirstLine[0]) {
-                case "GET" :
+                case "GET":
                     httpGetMethod();
                     break;
-                case "POST" :
+                case "POST":
                     parseBody();
                     break;
-                case "PUT" :
+                case "PUT":
 //                    httpPutMethod();
                     break;
-                case "DELETE" :
+                case "DELETE":
                     break;
             }
         } catch (Exception e) {
@@ -107,7 +108,7 @@ public class RemoteThread extends Thread {
             int contentLength = Integer.parseInt(request.getRequestHeader().get("Content-Length"));
             StringBuilder body = new StringBuilder();
 
-            for (int i = 0 ; i < contentLength ; ++i) {
+            for (int i = 0; i < contentLength; ++i) {
                 body.append(inStream.read());
             }
 
@@ -120,9 +121,15 @@ public class RemoteThread extends Thread {
 
     private void httpGetMethod() {
         Response response = new Response();
+        boolean isGet = true;
         try {
+            if (request.getFirstLine().contains("head=")) {
+                request.setPath("/" + getAttribute("head"));
+                isGet = false;
+            }
             LOGGER.debug(request.getPath());
-            if(request.getPath().trim().equals("/")) {
+            request.setPath(request.getPath().replace("//", "/"));
+            if (request.getPath().trim().equals("/")) {
                 request.setPath("/index.html");
             }
 
@@ -132,13 +139,14 @@ public class RemoteThread extends Thread {
                 BufferedReader fileStream = new BufferedReader(new FileReader(file));
 
                 if (ImageIO.read(file) != null) {
-                    response.addHeader("Content-Type: image/png");
+                    response.addHeader("Content-Type: image/"+getFileExtension(file));
                 } else {
                     response.addHeader("Content-type: text/html");
                 }
                 response.addHeader("Server: Bot");
                 //StringBuilder body = new StringBuilder();
                 response.setResponseBody(Files.readAllBytes(file.toPath()));
+                response.setStatusCode(200);
                 /*String line;
                 while ((line = fileStream.readLine()) != null) {
                     body.append(line + "\n");
@@ -146,11 +154,11 @@ public class RemoteThread extends Thread {
                 LOGGER.debug(body.toString());
                 response.setStatusCode(200);
                 response.setResponseBody(body.toString().getBytes());*/
-
             } else {
                 response.setStatusCode(404);
                 response.setResponseBody(("<h1>404 Not Found</h1>").getBytes());
             }
+
         } catch (IOException e) {
             response.setStatusCode(404);
             response.setResponseBody(("<h1>404 Not Found</h1>").getBytes());
@@ -158,16 +166,38 @@ public class RemoteThread extends Thread {
             response.setStatusCode(500);
             response.setResponseBody(("<h1>500 Internal Server Error</h1>").getBytes());
         } finally {
-            //LOGGER.debug(response);
             try {
-                LOGGER.debug(response.getByteResponse().length);
-                dataOutStream.write(response.getByteResponse(), 0, response.toString().getBytes().length);
+                if (isGet) {
+                    response.addHeader("Content-length: " + response.getResponseBody().length);
+                    LOGGER.debug(response.getByteResponse().length);
+                    dataOutStream.write(response.getByteResponse(), 0, response.getByteResponse().length);
+                } else {
+                    response.addHeader("Content-length: " +  response.getResponseBody().length);
+                    LOGGER.debug(response.toString());
+                    dataOutStream.write(response.toString().getBytes(), 0, response.toString().getBytes().length);
+                }
                 dataOutStream.flush();
                 dataOutStream.close();
             } catch (IOException e) {
                 LOGGER.error(e.getMessage(), e);
             }
         }
+    }
+
+    private String getAttribute(String attribute) {
+        String[] path = request.getPath().split("\\?|&");
+        for (String parts : path) {
+            if (parts.startsWith(attribute + "=")) {
+                LOGGER.debug("We return : " + parts.substring(attribute.length() + 1));
+                return parts.substring(attribute.length() + 1);
+            }
+        }
+        return null;
+    }
+
+    private String getFileExtension(File file) {
+        LOGGER.debug("Extension : " + file.getAbsolutePath().substring(file.getAbsolutePath().indexOf(".")-1));
+        return file.getAbsolutePath().substring(file.getAbsolutePath().indexOf(".")+1);
     }
 /*
     public void httpPutMethod() {
