@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id "org.beryx.jlink" version '2.16.4'
 }
 
 group 'fr.reseaux'
@@ -8,6 +9,7 @@ version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
+compileJava.options.encoding = 'UTF-8'
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
@@ -27,4 +29,8 @@ dependencies {
 
 application {
     mainClassName = 'fr.reseaux.httpserver.server.WebServer'
+}
+
+run {
+    systemProperties["log4j.skipJansi"] = false
 }

@@ -3,6 +3,7 @@ package fr.reseaux.httpserver.client;
 import java.net.InetAddress;
 import java.net.Socket;
 
+@Deprecated
 public class WebPing {
   public static void main(String[] args) {
   

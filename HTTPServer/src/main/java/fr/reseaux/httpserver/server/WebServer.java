@@ -2,6 +2,9 @@
 
 package fr.reseaux.httpserver.server;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -21,6 +24,8 @@ import java.net.Socket;
  */
 public class WebServer {
 
+  private static final Logger LOGGER = LogManager.getLogger(WebServer.class);
+
   /**
    * WebServer constructor.
    */
@@ -38,7 +43,7 @@ public class WebServer {
     }
 
     System.out.println("Waiting for connection");
-    for (;;) {
+    while (true) {
       try {
         // wait for a connection
         Socket remote = s.accept();
@@ -64,7 +69,7 @@ public class WebServer {
         // this blank line signals the end of the headers
         out.println("");
         // Send the HTML page
-        out.println("<H1>Welcome to the Ultra Mini-WebServer</H2>");
+        out.println("<h1>Welcome to the Ultra Mini-WebServer</h1>");
         out.flush();
         remote.close();
       } catch (Exception e) {
@@ -80,6 +85,10 @@ public class WebServer {
    *            Command line parameters are not used.
    */
   public static void main(String args[]) {
+    LOGGER.info("message");
+    LOGGER.debug("message");
+    LOGGER.error("message");
+    LOGGER.fatal("message");
     WebServer ws = new WebServer();
     ws.start();
   }
