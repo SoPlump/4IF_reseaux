@@ -1,5 +1,8 @@
 package fr.reseaux.httpserver.server;
 
+import org.apache.logging.log4j.core.util.ArrayUtils;
+import sun.security.util.ArrayUtil;
+
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 
@@ -50,6 +53,24 @@ public class Response {
         this.responseHeader.put(header[0], header[1]);
     }
 
+    public byte[] getByteResponse() {
+        StringBuilder response = new StringBuilder();
+        response.append("HTTP/1.0 " + this.statusCode+ " " + this.statusCodes.get(this.statusCode) + "\n");
+        for (String key : responseHeader.keySet()) {
+            response.append(key + ": " +responseHeader.get(key) +"\n");
+        }
+        response.append("\n");
+        byte[] partOne = response.toString().getBytes();
+        int lengthOne = partOne.length;
+        int lengthBody = responseBody.length;
+        byte[] result = new byte[lengthOne + lengthBody];
+
+        System.arraycopy(partOne, 0, result, 0, lengthOne);
+        System.arraycopy(responseBody, 0, result, lengthOne, lengthBody);
+
+        return result;
+    }
+
     @Override
     public String toString() {
         StringBuilder response = new StringBuilder();
@@ -62,14 +83,3 @@ public class Response {
         return response.toString();
     }
 }
-
-
-// Send the response
-//out.println("HTTP/1.0 200 OK");
-//out.println("Content-Type: text/html");
-//out.println("Server: Bot");
-//// this blank line signals the end of the headers
-//out.println("");
-//// Send the HTML page
-//out.println("<h1>Welcome to the Ultra Mini-WebServer</h1>");
-//out.flush();
