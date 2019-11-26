@@ -1,0 +1,35 @@
+plugins {
+    id 'org.openjfx.javafxplugin' version '0.0.8'
+    id "org.beryx.jlink" version '2.16.4'
+}
+
+javafx {
+    version = '11.0.2'
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
+}
+
+group 'fr.reseaux'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.12.1'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.12.1'
+    runtime group: 'org.fusesource.jansi', name: 'jansi', version: '1.18'
+    testImplementation 'junit:junit:4.12'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation project(':common')
+}
+
+application {
+    mainClassName = 'fr.reseaux.client.App'
+
+    run {
+        args = ['localhost','1234']
+    }
+}

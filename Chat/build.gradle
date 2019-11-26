@@ -1,0 +1,22 @@
+group 'fr.reseaux'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+allprojects {
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+}
+
+configure(subprojects.findAll { it.name == 'client' || it.name == 'server' }) {
+    apply plugin: 'java'
+    apply plugin: 'application'
+}
