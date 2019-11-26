@@ -38,16 +38,19 @@ public class RemoteThread extends Thread {
     }
 
     private Request parseRequest() {
-        try {
+        //try {
             parseHeader();
             // read the data sent. We basically ignore it,
             // stop reading once a blank line is hit. This
             // blank line signals the end of the client HTTP
             // headers.
+            /*
             String str = ".";
             while (!str.equals("")) {
                 str = inStream.readLine();
             }
+            */
+
 
 
             // Send the response
@@ -60,10 +63,12 @@ public class RemoteThread extends Thread {
             //out.println("<h1>Welcome to the Ultra Mini-WebServer</h1>");
             //out.flush();
             // Send the headers
-            remoteSocket.close();
-        } catch (IOException e) {
+            //remoteSocket.close();
+        /*} catch (IOException e) {
             e.printStackTrace();
         }
+
+         */
         return null;
     }
 
@@ -99,7 +104,7 @@ public class RemoteThread extends Thread {
 
             // Handling request type
 
-
+            LOGGER.debug("Arrival on Switch");
             switch (splitFirstLine[0]) {
                 case "GET" :
                     httpGetMethod();
@@ -138,16 +143,28 @@ public class RemoteThread extends Thread {
     private void httpGetMethod() {
         try {
             Response response = new Response();
+            LOGGER.debug(request.getPath());
 
             File file = new File("src/main/resources" + request.getPath());
+            LOGGER.debug(file.getAbsolutePath());
             BufferedReader fileStream = new BufferedReader(new FileReader(file));
 
+            response.addHeader("Content-Type: text/html");
+            response.addHeader("Server: Bot");
+            StringBuilder body = new StringBuilder();
             String line;
             while ((line = fileStream.readLine()) != null) {
-
+                body.append(line + "\n");
             }
-        } catch (Exception e) {
+            LOGGER.debug(body.toString());
+            response.setStatusCode(200);
+            response.setResponseBody(body.toString().getBytes());
+            LOGGER.debug(response);
+            outStream.println(response);
+            outStream.flush();
 
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
         }
     }
 }
