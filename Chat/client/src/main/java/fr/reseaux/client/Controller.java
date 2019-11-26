@@ -21,8 +21,8 @@ public class Controller {
     private static Client client;
 
     public Controller(String[] args) throws IOException {
-        Controller.client = new Client(args);
-        Controller.client.start();
+        //Controller.client = new Client(args);
+        //Controller.client.start();
     }
 
     public void setUiController(UIController uiController) {
@@ -70,6 +70,17 @@ public class Controller {
         return client.registerUser(new User(username, password));
     }
 
+    public boolean connectToServer(String ipAddress, String port) {
+        try {
+            Controller.client = new Client(ipAddress, port);
+            Controller.client.start();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public static void printStatus(String text) {
         try {
             uiController.printStatus(text);
@@ -85,4 +96,5 @@ public class Controller {
             LOGGER.error(e.getMessage(), e);
         }
     }
+
 }

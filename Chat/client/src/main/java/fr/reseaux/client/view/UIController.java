@@ -1,16 +1,11 @@
 package fr.reseaux.client.view;
 
-import com.sun.swing.internal.plaf.metal.resources.metal_es;
-import fr.reseaux.client.App;
 import fr.reseaux.client.Controller;
 import fr.reseaux.common.Message;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
@@ -51,6 +46,8 @@ public class UIController {
 
     private StatusBar statusBar;
 
+    private ServerConnectionPage serverConnectionPage;
+
     public UIController(Stage stage, Controller controller) {
         this.stage = stage;
 
@@ -66,6 +63,9 @@ public class UIController {
 
         // Register page
         this.registerPage = new RegisterPage(this);
+
+        // Server Connection page
+        this.serverConnectionPage = new ServerConnectionPage(this);
     }
 
     public void initialize() {
@@ -110,8 +110,8 @@ public class UIController {
         //this.mainPane.setBottom(this.statusBar);
 
 
-
-        loadLoginPage();
+        loadServerConnectionPage();
+        //loadLoginPage();
         //loadRegisterPage();
     }
 
@@ -143,6 +143,11 @@ public class UIController {
         LOGGER.debug("loading register page");
     }
 
+    public void loadServerConnectionPage() {
+        this.mainPane.setCenter(serverConnectionPage);
+        LOGGER.debug("loading server connection page");
+    }
+
     public void connectUser(String username, String password) {
         if (this.controller.connectUser(username, password)) {
             loadConversationPage();
@@ -169,6 +174,14 @@ public class UIController {
         }
         else {
             this.registerPage.printRegistrationError("Please enter the same password.");
+        }
+    }
+
+    public void connectToServer(String ipAddress, String port) {
+        if(this.controller.connectToServer(ipAddress, port)) {
+            loadLoginPage();
+        } else {
+            this.serverConnectionPage.printConnectionError();
         }
     }
 

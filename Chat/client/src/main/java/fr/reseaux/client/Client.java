@@ -57,18 +57,13 @@ public class Client extends Thread {
      * main method accepts a connection, receives a message from client then
      * sends an echo to the client
      */
-    public Client(String[] args) throws IOException {
+    public Client(String ipAddress, String port) throws IOException {
         LOGGER.info("Creating Client ...");
-
-        if (args.length != 2) {
-            System.out.println("Usage: java Client <EchoServer host> <EchoServer port>");
-            System.exit(1);
-        }
 
         try {
             this.isConnected = false;
             // creation socket ==> connexion
-            this.echoSocket = new Socket(args[0], Integer.parseInt(args[1]));
+            this.echoSocket = new Socket(ipAddress, Integer.parseInt(port));
             this.socIn = new BufferedReader(
                     new InputStreamReader(echoSocket.getInputStream()));
 
@@ -78,12 +73,12 @@ public class Client extends Thread {
             }
 
         } catch (UnknownHostException e) {
-            System.err.println("Don't know about host:" + args[0]);
-            System.exit(1);
+            System.err.println("Don't know about host:" + ipAddress);
+            throw new UnknownHostException();
         } catch (IOException e) {
             System.err.println("Couldn't get I/O for "
-                    + "the connection to:" + args[0]);
-            System.exit(1);
+                    + "the connection to:" + ipAddress);
+            throw new IOException();
         }
     }
 
