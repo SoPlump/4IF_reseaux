@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.URLEncoder;
 import java.security.InvalidParameterException;
 
 public class RemoteThread extends Thread {
@@ -78,7 +79,7 @@ public class RemoteThread extends Thread {
 
             // Parsing the first line
 
-            LOGGER.debug("Parsing request");
+            //LOGGER.debug("Parsing request");
 
             String firstLine = inStream.readLine();
             if (firstLine == null) {
@@ -102,15 +103,18 @@ public class RemoteThread extends Thread {
                 line = inStream.readLine();
             }
 
+            LOGGER.debug("HEADER : " + request.getRequestHeader());
+
             // Handling request type
 
-            LOGGER.debug("Arrival on Switch");
+            //LOGGER.debug("Arrival on Switch");
             switch (splitFirstLine[0]) {
                 case "GET" :
                     httpGetMethod();
                     break;
                 case "POST" :
                     parseBody();
+                    httpPostMethod();
                     break;
                 case "PUT" :
                     break;
@@ -124,16 +128,16 @@ public class RemoteThread extends Thread {
 
     private void parseBody() {
         try {
-            String line = null;
-            line = inStream.readLine();
             int contentLength = Integer.parseInt(request.getRequestHeader().get("Content-Length"));
             StringBuilder body = new StringBuilder();
 
             for (int i = 0 ; i < contentLength ; ++i) {
-                body.append(inStream.read());
+                body.append((char)inStream.read());
             }
 
             request.setRequestBody(body.toString());
+
+            LOGGER.debug("BODY : " + body.toString());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -143,10 +147,10 @@ public class RemoteThread extends Thread {
     private void httpGetMethod() {
         try {
             Response response = new Response();
-            LOGGER.debug(request.getPath());
+            //LOGGER.debug(request.getPath());
 
             File file = new File("src/main/resources" + request.getPath());
-            LOGGER.debug(file.getAbsolutePath());
+            //LOGGER.debug(file.getAbsolutePath());
             BufferedReader fileStream = new BufferedReader(new FileReader(file));
 
             response.addHeader("Content-Type: text/html");
@@ -156,10 +160,30 @@ public class RemoteThread extends Thread {
             while ((line = fileStream.readLine()) != null) {
                 body.append(line + "\n");
             }
-            LOGGER.debug(body.toString());
+            //LOGGER.debug(body.toString());
             response.setStatusCode(200);
             response.setResponseBody(body.toString().getBytes());
-            LOGGER.debug(response);
+            //LOGGER.debug(response);
+            outStream.println(response);
+            outStream.flush();
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    private void httpPostMethod() {
+        try {
+            Response response = new Response();
+
+            response.addHeader("Content-Type: text/html");
+            response.addHeader("Server: Bot");
+
+            String body = "";
+
+            response.setStatusCode(200);
+            response.setResponseBody(body.getBytes());
+
             outStream.println(response);
             outStream.flush();
 
