@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="72b6efb6-d98d-424e-b44c-a92c6216d346" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../HTTPServer/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../HTTPServer/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../HTTPServer/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../HTTPServer/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../HTTPServer/src/main/java/fr/reseaux/httpserver/client/WebPing.java" beforeDir="false" afterPath="$PROJECT_DIR$/../HTTPServer/src/main/java/fr/reseaux/httpserver/client/WebPing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../HTTPServer/src/main/java/fr/reseaux/httpserver/server/WebServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../HTTPServer/src/main/java/fr/reseaux/httpserver/server/WebServer.java" afterDir="false" />
-    </list>
+    <list default="true" id="72b6efb6-d98d-424e-b44c-a92c6216d346" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
