@@ -62,6 +62,14 @@ public class Controller {
         uiController.clearArea();
     }
 
+    public static void addUsers(String username) {
+        uiController.addUserToList(username);
+    }
+
+    public static void clearUsersArea() {
+        uiController.clearUsersArea();
+    }
+
     public boolean connectUser(String username, String password) {
         return client.connectUser(new User(username, password));
     }
@@ -95,6 +103,10 @@ public class Controller {
         } catch (NullPointerException e) {
             LOGGER.error(e.getMessage(), e);
         }
+    }
+
+    public static void changeGroupName(String groupName) {
+        uiController.setGroupName(groupName);
     }
 
 }

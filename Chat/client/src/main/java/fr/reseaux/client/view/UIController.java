@@ -5,9 +5,11 @@ import fr.reseaux.common.Message;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,6 +29,10 @@ public class UIController {
 
     @FXML
     private FlowPane bottomFlow;
+
+    private FlowPane leftFlow;
+
+    private Label groupName;
 
     public TextArea getMessageArea() {
         return messageArea;
@@ -48,6 +54,8 @@ public class UIController {
 
     private ServerConnectionPage serverConnectionPage;
 
+    private UserListArea userListArea;
+
     public UIController(Stage stage, Controller controller) {
         this.stage = stage;
 
@@ -57,6 +65,9 @@ public class UIController {
         this.messageArea = new TextArea();
         this.controller = controller;
         this.statusBar = new StatusBar();
+        this.groupName = new Label();
+        this.leftFlow = new FlowPane();
+        this.userListArea = new UserListArea();
 
         // Login page
         this.loginPage = new LoginPage(this);
@@ -136,6 +147,10 @@ public class UIController {
         this.mainPane.setTop(statusBar);
         this.bottomFlow.getChildren().add(messageArea);
         this.bottomFlow.getChildren().add(sendButton);
+        this.leftFlow.setPrefWidth(80.0);
+        this.mainPane.setLeft(leftFlow);
+        this.leftFlow.getChildren().add(groupName);
+        this.leftFlow.getChildren().add(userListArea);
     }
 
     public void loadRegisterPage() {
@@ -196,4 +211,19 @@ public class UIController {
     public void printError(String error) {
         this.statusBar.setError(error);
     }
+
+    public void setGroupName(String groupName) {
+        this.groupName.setText(groupName);
+    }
+
+
+    public void addUserToList(String username) {
+        this.userListArea.addUser(username);
+    }
+
+    public void clearUsersArea() {
+        this.userListArea.clearArea();
+    }
 }
+
+
