@@ -1,5 +1,6 @@
 package fr.reseaux.common;
 
+import java.net.Socket;
 import java.util.Objects;
 
 public class User {

@@ -9,6 +9,8 @@ package fr.reseaux.server;
 import java.io.*;
 import java.net.*;
 import java.util.List;
+import java.util.Set;
+
 import fr.reseaux.common.Message;
 import fr.reseaux.common.ServerRequest;
 import fr.reseaux.common.ServerResponse;
@@ -134,6 +136,17 @@ public class ClientThread
                         }
                         outputStream.writeObject(response);
                         break;
+                    case "userList":
+                        groupName = request.getRequestAttribute("groupName");
+                        Set<String> userList = Server.getWhitelist(groupName);
+                        LOGGER.debug("USER LIST : " + userList);
+                        outputStream.writeObject(userList);
+                        break;
+                    case "groupList":
+                        List<String> groupList = Server.getGroups();
+                        outputStream.writeObject(groupList);
+                        break;
+
 
                 }
             }

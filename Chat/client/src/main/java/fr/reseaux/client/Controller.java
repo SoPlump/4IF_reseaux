@@ -21,8 +21,8 @@ public class Controller {
     private static Client client;
 
     public Controller(String[] args) throws IOException {
-        Controller.client = new Client(args);
-        Controller.client.start();
+        //Controller.client = new Client(args);
+        //Controller.client.start();
     }
 
     public void setUiController(UIController uiController) {
@@ -62,12 +62,35 @@ public class Controller {
         uiController.clearArea();
     }
 
+    public static void addUsers(String username) {
+        uiController.addUserToList(username);
+    }
+
+    public static void clearUsersArea() {
+        uiController.clearUsersArea();
+    }
+
+    public static void addGroup(String groupName) {
+        uiController.addGroup(groupName);
+    }
+
     public boolean connectUser(String username, String password) {
         return client.connectUser(new User(username, password));
     }
 
     public boolean registerUser(String username, String password) {
         return client.registerUser(new User(username, password));
+    }
+
+    public boolean connectToServer(String ipAddress, String port) {
+        try {
+            Controller.client = new Client(ipAddress, port);
+            Controller.client.start();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public static void printStatus(String text) {
@@ -85,4 +108,9 @@ public class Controller {
             LOGGER.error(e.getMessage(), e);
         }
     }
+
+    public static void changeGroupName(String groupName) {
+        uiController.setGroupName(groupName);
+    }
+
 }

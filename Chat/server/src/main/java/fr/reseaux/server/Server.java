@@ -13,7 +13,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 
 public class Server {
@@ -48,8 +50,6 @@ public class Server {
             userFactory = new UserFactory();
             userList = userFactory.createUsersFromXML(new File(USERFILE));
 
-            listenSocket = new ServerSocket(Integer.parseInt(args[0])); //port
-
             /*
             MulticastThread globalChat = new MulticastThread(multicastPort, (Inet4Address) Inet4Address.getByName("225.225.225.225"), "Global Chat");
             multicastList.add(globalChat);
@@ -66,6 +66,7 @@ public class Server {
                 LOGGER.debug(thread.retrieveInfos());
             }
 
+            listenSocket = new ServerSocket(Integer.parseInt(args[0])); //port
             System.out.println("Server ready...");
             int i = 0;
             while (true) {
@@ -180,6 +181,26 @@ public class Server {
         result.get(0).setConnected(false);
         return true;
 
+    }
+
+    public static Set<String> getWhitelist(String groupName) {
+        if("Global Chat".equals(groupName)) {
+            Set<String> whitelist = new ConcurrentSkipListSet<>();
+            for (User user : userList) {
+                whitelist.add(user.getUsername());
+            }
+            return whitelist;
+        } else {
+            return getMulticastThreadByName(groupName).getWhitelist();
+        }
+    }
+
+    public static List<String> getGroups() {
+        List<String> groupList = new Vector<>();
+        for (MulticastThread multicastThread : multicastList) {
+            groupList.add(multicastThread.getGroupName());
+        }
+        return groupList;
     }
 }
 

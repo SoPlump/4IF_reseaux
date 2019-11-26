@@ -13,6 +13,7 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,6 +31,8 @@ public class Client extends Thread {
     }
 
     private boolean isConnected;
+
+    private String currentGroup;
 
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
@@ -57,18 +60,13 @@ public class Client extends Thread {
      * main method accepts a connection, receives a message from client then
      * sends an echo to the client
      */
-    public Client(String[] args) throws IOException {
+    public Client(String ipAddress, String port) throws IOException {
         LOGGER.info("Creating Client ...");
-
-        if (args.length != 2) {
-            System.out.println("Usage: java Client <EchoServer host> <EchoServer port>");
-            System.exit(1);
-        }
 
         try {
             this.isConnected = false;
             // creation socket ==> connexion
-            this.echoSocket = new Socket(args[0], Integer.parseInt(args[1]));
+            this.echoSocket = new Socket(ipAddress, Integer.parseInt(port));
             this.socIn = new BufferedReader(
                     new InputStreamReader(echoSocket.getInputStream()));
 
@@ -78,12 +76,12 @@ public class Client extends Thread {
             }
 
         } catch (UnknownHostException e) {
-            System.err.println("Don't know about host:" + args[0]);
-            System.exit(1);
+            System.err.println("Don't know about host:" + ipAddress);
+            throw new UnknownHostException();
         } catch (IOException e) {
             System.err.println("Couldn't get I/O for "
-                    + "the connection to:" + args[0]);
-            System.exit(1);
+                    + "the connection to:" + ipAddress);
+            throw new IOException();
         }
     }
 
@@ -105,7 +103,18 @@ public class Client extends Thread {
 
  */
         joinGroup("Global Chat");
+        currentGroup = "Global Chat";
         Controller.printStatus("Connected as " + username);
+        ServerRequest getGroupList = new ServerRequest("groupList", "");
+        try {
+            outputStream.writeObject(getGroupList);
+            List<String> groupList = (List<String>) inputStream.readObject();
+            for (String groupName : groupList) {
+                Controller.addGroup(groupName);
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         //joinGroup("Secondary Chat", updater);
         //joinGroup("Third Chat", updater);
         String line;
@@ -120,7 +129,7 @@ public class Client extends Thread {
                         datagramPacket.getData(),
                         datagramPacket.getOffset(),
                         datagramPacket.getLength(),
-                        StandardCharsets.UTF_8 // or some other charset
+                        StandardCharsets.UTF_8
                 );
                 lastMsg = new Message(content); //todo : recuperer usename
                 messageList.add(lastMsg);
@@ -211,10 +220,20 @@ public class Client extends Thread {
                 multicastSocket.joinGroup(multicastAddress);
                 Message leaveMessage = new Message(username + " vient de se connecter.", "server");
                 doWrite(leaveMessage);
+                currentGroup = groupName;
+                Controller.changeGroupName(groupName);
                 messageList.add(new Message("/clear", "server"));
                 LOGGER.info("Sending a request to get the story");
                 //lastMsg = new Message("Connected as " + username, "server");
                 //messageList.add(lastMsg);
+
+                ServerRequest userlistRequest = new ServerRequest("userList", "-groupName:{"+groupName+"}");
+                outputStream.writeObject(userlistRequest);
+                Set<String> whitelist = (Set<String>) inputStream.readObject();
+                Controller.clearUsersArea();
+                for (String username : whitelist) {
+                    Controller.addUsers(username);
+                }
 
                 Platform.runLater(updater);
                 ServerRequest storyRequest = new ServerRequest("getStory", "");
@@ -296,6 +315,7 @@ public class Client extends Thread {
                 this.outputStream.writeObject(addRequest);
                 ServerResponse response = (ServerResponse) this.inputStream.readObject();
                 if (response.isSuccess()) {
+                    Controller.addUsers(userToAdd);
                     Controller.printStatus(response.getContent());
                 } else {
                     Controller.printError(response.getContent());
@@ -329,6 +349,7 @@ public class Client extends Thread {
                 outputStream.writeObject(requestCreate);
                 ServerResponse response = (ServerResponse) inputStream.readObject();
                 if (response.isSuccess()) {
+                    Controller.addGroup(group);
                     Controller.printStatus(response.getContent());
                 } else {
                     Controller.printError(response.getContent());
@@ -341,6 +362,14 @@ public class Client extends Thread {
         }
 
 
+    }
+
+    public String getCurrentGroup() {
+        return currentGroup;
+    }
+
+    public void setCurrentGroup(String currentGroup) {
+        this.currentGroup = currentGroup;
     }
 }
 

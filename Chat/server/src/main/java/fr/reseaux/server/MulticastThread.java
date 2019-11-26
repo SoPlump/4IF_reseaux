@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
@@ -79,7 +80,7 @@ public class MulticastThread
                     msg = messageQueue.poll();
                     if(!msg.getContent().contains("null vient de se connecter")) {
                         addMessageToStory(msg);
-                        DatagramPacket datagramPacket = new DatagramPacket(msg.toString().getBytes("UTF-8"), msg.toString().getBytes().length, multicastAddress, multicastPort);
+                        DatagramPacket datagramPacket = new DatagramPacket(msg.toString().getBytes(StandardCharsets.UTF_8), msg.toString().getBytes(StandardCharsets.UTF_8).length, multicastAddress, multicastPort);
                         multicastSocket.send(datagramPacket);
                     }
                 }
@@ -129,5 +130,9 @@ public class MulticastThread
     public void loadUsers() {
         WhitelistFactory whitelistFactory = new WhitelistFactory();
         whitelist = whitelistFactory.loadUsers(new File("files/" + groupName + "/whitelist.txt"));
+    }
+
+    public Set<String> getWhitelist() {
+        return this.whitelist;
     }
 }
