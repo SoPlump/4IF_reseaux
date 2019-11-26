@@ -63,10 +63,6 @@ public class WebServer {
      * @param args Command line parameters are not used.
      */
     public static void main(String args[]) {
-        LOGGER.info("message");
-        LOGGER.debug("message");
-        LOGGER.error("message");
-        LOGGER.fatal("message");
         WebServer ws = new WebServer();
         ws.start();
     }
