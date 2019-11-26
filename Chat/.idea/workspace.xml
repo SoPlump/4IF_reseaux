@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ea090a41-a1c1-41d2-9c9e-cf470fc372bc" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/client/src/main/java/fr/reseaux/client/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/fr/reseaux/client/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/main/java/fr/reseaux/client/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/fr/reseaux/client/Controller.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/files/Another Chat/story.txt" beforeDir="false" afterPath="$PROJECT_DIR$/server/files/Another Chat/story.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/files/Another Chat/whitelist.txt" beforeDir="false" afterPath="$PROJECT_DIR$/server/files/Another Chat/whitelist.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/files/Global Chat/story.txt" beforeDir="false" afterPath="$PROJECT_DIR$/server/files/Global Chat/story.txt" afterDir="false" />
+    <list default="true" id="72b6efb6-d98d-424e-b44c-a92c6216d346" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HTTPServer/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../HTTPServer/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HTTPServer/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../HTTPServer/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HTTPServer/src/main/java/fr/reseaux/httpserver/client/WebPing.java" beforeDir="false" afterPath="$PROJECT_DIR$/../HTTPServer/src/main/java/fr/reseaux/httpserver/client/WebPing.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HTTPServer/src/main/java/fr/reseaux/httpserver/server/WebServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../HTTPServer/src/main/java/fr/reseaux/httpserver/server/WebServer.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -59,6 +59,24 @@
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
                 <item name="application" type="c8890929:TasksNode$1" />
               </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="reseaux" type="f1a62948:ProjectNode" />
+                <item name="server" type="2d1252cf:ModuleNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="reseaux" type="f1a62948:ProjectNode" />
+                <item name="server" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="reseaux" type="f1a62948:ProjectNode" />
+                <item name="server" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="application" type="c8890929:TasksNode$1" />
+              </path>
             </expand>
             <select />
           </tree_state>
@@ -86,8 +104,10 @@
   <component name="ProjectId" id="1TvT257xcXFwT6N9qXlPYfjH5Aa" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
     <property name="last_directory_selection" value="$PROJECT_DIR$/client/src/main/java" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/common/src/main/resources" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -162,13 +182,17 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="ea090a41-a1c1-41d2-9c9e-cf470fc372bc" name="Default Changelist" comment="" />
+      <changelist id="72b6efb6-d98d-424e-b44c-a92c6216d346" name="Default Changelist" comment="" />
       <created>1574339358804</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1574339358804</updated>
+      <workItem from="1574757860802" duration="599000" />
     </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -193,8 +217,5 @@
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
-  </component>
-  <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/4IF_reseaux$4IF_reseaux_client__run_.ic" NAME="4IF_reseaux:client [run] Coverage Results" MODIFIED="1574416503558" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
   </component>
 </project>
