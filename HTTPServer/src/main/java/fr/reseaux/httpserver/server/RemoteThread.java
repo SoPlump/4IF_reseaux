@@ -9,6 +9,7 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.security.InvalidParameterException;
+import java.util.regex.Pattern;
 
 public class RemoteThread extends Thread {
 
@@ -174,13 +175,12 @@ public class RemoteThread extends Thread {
     }
 
     private void httpPostMethod() {
+        Response response = new Response();
         try {
-            Response response = new Response();
-
             response.addHeader("Content-Type: text/html");
             response.addHeader("Server: Bot");
 
-            String body = "";
+            String body = "<h1> Bienvenue " + request.getRequestBodyElement("username") + "</h1>";
 
             response.setStatusCode(200);
             response.setResponseBody(body.getBytes());
@@ -189,6 +189,7 @@ public class RemoteThread extends Thread {
             outStream.flush();
 
         } catch (Exception e) {
+            response.setStatusCode(500);
             LOGGER.error(e.getMessage(), e);
         }
     }

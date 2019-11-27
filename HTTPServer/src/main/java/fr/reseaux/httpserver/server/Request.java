@@ -1,6 +1,7 @@
 package fr.reseaux.httpserver.server;
 
 import java.net.Socket;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -74,6 +75,17 @@ public class Request {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public String getRequestBodyElement(String element) {
+        String[] responses = requestBody.toString().split("&");
+        for(int i = 0; i < responses.length; ++i) {
+            String[] input = responses[i].split("=");
+            if (input[0].equals(element)) {
+                return input[1];
+            }
+        }
+        throw new InvalidParameterException();
     }
 }
 
