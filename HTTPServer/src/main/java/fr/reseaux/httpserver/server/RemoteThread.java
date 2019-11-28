@@ -233,8 +233,9 @@ public class RemoteThread extends Thread {
             }
             response.setResponseBody(body.getBytes());
 
-            dataOutStream.write()
-            outStream.flush();
+            dataOutStream.write(response.getByteResponse(), 0, response.getByteResponse().length);
+            dataOutStream.flush();
+            dataOutStream.close();
 
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
