@@ -4,9 +4,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.awt.image.LookupOp;
 import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.InvalidParameterException;
 import java.util.regex.Pattern;
@@ -183,18 +185,26 @@ public class RemoteThread extends Thread {
             String path = request.getPath();
             String body = null;
             ++idImage;
+            LOGGER.info("HELLO WORLD 24");
 
             if("/downloadFile".equals(path)) {
+                LOGGER.info("HELLO WORLD 25");
                 File file = new File("src/main/resources/image.jpg");
                 file.createNewFile();
                 response.addHeader("Content-Type: " + Files.probeContentType(file.toPath()));
                 response.addHeader("Server: Bot");
                 //body = request.getRequestBodyElement("image");
 
-                String imageBody = request.getRequestBody().split("\n")[1];
-                LOGGER.debug(imageBody);
-                FileWriter writer = new FileWriter(new File("src/main/resources/image.jpg"));
-                writer.write(imageBody);
+                String imageBody = request.getRequestBody().split("\n\n")[2];
+                LOGGER.info(imageBody);
+                //FileWriter writer = new FileWriter(new File("src/main/resources/image.jpg"));
+                //writer.write(imageBody);
+
+                Files.write(new File("src/main/resources/image.jpg").toPath(),imageBody.getBytes(StandardCharsets.UTF_16));
+                //BufferedImage bImage = ImageIO.read(new File("src/main/resources/image.jpg");
+                //ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                //ImageIO.write(bImage, "jpg", bos );
+
                 body="";
 
                 //LOGGER.debug(request.getFirstLine());
