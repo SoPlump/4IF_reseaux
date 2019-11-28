@@ -189,7 +189,13 @@ public class RemoteThread extends Thread {
                 file.createNewFile();
                 response.addHeader("Content-Type: " + Files.probeContentType(file.toPath()));
                 response.addHeader("Server: Bot");
-                body = request.getRequestBodyElement("image");
+                //body = request.getRequestBodyElement("image");
+
+                String imageBody = request.getRequestBody().split("\n")[1];
+                LOGGER.debug(imageBody);
+                FileWriter writer = new FileWriter(new File("src/main/resources/image.jpg"));
+                writer.write(imageBody);
+                body="";
 
                 //LOGGER.debug(request.getFirstLine());
                 //LOGGER.debug(request.getRequestBody());
