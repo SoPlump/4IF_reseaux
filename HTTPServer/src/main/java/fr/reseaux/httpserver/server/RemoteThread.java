@@ -329,13 +329,17 @@ public class RemoteThread extends Thread {
                     }
                 }
                 FileWriter writer = new FileWriter(new File("src/main/resources" + request.getPath()));
-                //if(request.getRequestHeader().get("Content-Type"))
-                writer.append(request.getRequestBody());
+                if(request.getRequestHeader().get("Content-Type").contains("text")) { // Simple texte
+                    writer.append(request.getRequestBody());
+                    writer.close();
+                    response.setStatusCode(200);
+                    response.setResponseBody(("<h1>File created</h1>").getBytes());
+                }
             }
 
         } catch (IOException e) {
             response.setStatusCode(404);
-            response.setResponseBody(("<h1>404 Not Found</h1>").getBytes());
+            response.setResponseBody(("<h1>500 Internal Server Error</h1>").getBytes());
         } catch (
                 Exception e) {
             response.setStatusCode(500);
