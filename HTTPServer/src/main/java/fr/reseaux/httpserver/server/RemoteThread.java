@@ -318,35 +318,19 @@ public class RemoteThread extends Thread {
                 String[] pathToFile = request.getPath().split("/");
                 int i;
                 String actualPath = "src/main/resources";
-                File actualFile;
-                for (i = 0; i < pathToFile.length; i++) {
-                    actualPath = actualPath + "/" + pathToFile[i];
-                    actualFile = new File(actualPath);
-                    // if(actualPath.di) {
-
-                    //  }
+                File actualDir;
+                if(pathToFile.length > 1) {
+                    for (i = 0; i < pathToFile.length - 1; i++) {
+                        actualPath = actualPath + "/" + pathToFile[i];
+                        actualDir = new File(actualPath);
+                        if (!actualDir.isDirectory()) {
+                            actualDir.mkdir();
+                        }
+                    }
                 }
-
-
-                File file = new File("src/main/resources" + request.getPath());
-                if (file.exists()) {
-                    LOGGER.debug(file.getAbsolutePath());
-                    BufferedReader fileStream = new BufferedReader(new FileReader(file));
-
-
-                    //StringBuilder body = new StringBuilder();
-                    response.setStatusCode(200);
-                /*String line;
-                while ((line = fileStream.readLine()) != null) {
-                    body.append(line + "\n");
-                }
-                LOGGER.debug(body.toString());
-                response.setStatusCode(200);
-                response.setResponseBody(body.toString().getBytes());*/
-                } else {
-                    response.setStatusCode(404);
-                    response.setResponseBody(("<h1>404 Not Found</h1>").getBytes());
-                }
+                FileWriter writer = new FileWriter(new File("src/main/resources" + request.getPath()));
+                //if(request.getRequestHeader().get("Content-Type"))
+                writer.append(request.getRequestBody());
             }
 
         } catch (IOException e) {
