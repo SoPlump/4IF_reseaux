@@ -124,7 +124,11 @@ public class MulticastThread
 
     public ServerResponse addUser(String username) {
         WhitelistFactory whitelistFactory = new WhitelistFactory();
-        return whitelistFactory.addUser(whitelist, new File("files/" + groupName + "/whitelist.txt"), username);
+        ServerResponse response = whitelistFactory.addUser(whitelist, new File("files/" + groupName + "/whitelist.txt"), username);
+        if(response.isSuccess()) {
+            whitelist.add(username);
+        }
+        return response;
     }
 
     public void loadUsers() {

@@ -51,6 +51,8 @@ public class Controller {
         for (Message message : messageToPrint) {
             if ("/clear".equals(message.getContent())) {
                 clearArea();
+            } else if ("server".equals(message.getUsername()) && (message.getContent().contains("addUser:"))) {
+                Controller.addUsers(message.getContent().substring("addUser:".length()));
             } else {
                 Controller.uiController.printMessage(message);
             }
@@ -68,6 +70,10 @@ public class Controller {
 
     public static void clearUsersArea() {
         uiController.clearUsersArea();
+    }
+
+    public static void clearGroupsArea() {
+        uiController.clearGroupsArea();
     }
 
     public static void addGroup(String groupName) {

@@ -105,16 +105,7 @@ public class Client extends Thread {
         joinGroup("Global Chat");
         currentGroup = "Global Chat";
         Controller.printStatus("Connected as " + username);
-        ServerRequest getGroupList = new ServerRequest("groupList", "");
-        try {
-            outputStream.writeObject(getGroupList);
-            List<String> groupList = (List<String>) inputStream.readObject();
-            for (String groupName : groupList) {
-                Controller.addGroup(groupName);
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        readGroups();
         //joinGroup("Secondary Chat", updater);
         //joinGroup("Third Chat", updater);
         String line;
@@ -226,14 +217,7 @@ public class Client extends Thread {
                 LOGGER.info("Sending a request to get the story");
                 //lastMsg = new Message("Connected as " + username, "server");
                 //messageList.add(lastMsg);
-
-                ServerRequest userlistRequest = new ServerRequest("userList", "-groupName:{"+groupName+"}");
-                outputStream.writeObject(userlistRequest);
-                Set<String> whitelist = (Set<String>) inputStream.readObject();
-                Controller.clearUsersArea();
-                for (String username : whitelist) {
-                    Controller.addUsers(username);
-                }
+                readUsers(groupName);
 
                 Platform.runLater(updater);
                 ServerRequest storyRequest = new ServerRequest("getStory", "");
@@ -253,7 +237,7 @@ public class Client extends Thread {
                 Controller.printStatus("Joined group " + groupName);
                 // }
             } else {
-                LOGGER.debug(response.getContent());
+                Controller.printError(response.getContent());
             }
 
         } catch (IOException | ClassNotFoundException e) {
@@ -315,7 +299,7 @@ public class Client extends Thread {
                 this.outputStream.writeObject(addRequest);
                 ServerResponse response = (ServerResponse) this.inputStream.readObject();
                 if (response.isSuccess()) {
-                    Controller.addUsers(userToAdd);
+                    doWrite(new Message("addUser:"+userToAdd, "server"));
                     Controller.printStatus(response.getContent());
                 } else {
                     Controller.printError(response.getContent());
@@ -370,6 +354,34 @@ public class Client extends Thread {
 
     public void setCurrentGroup(String currentGroup) {
         this.currentGroup = currentGroup;
+    }
+
+    public void readUsers(String groupName) {
+        try {
+            ServerRequest userlistRequest = new ServerRequest("userList", "-groupName:{"+groupName+"}");
+            outputStream.writeObject(userlistRequest);
+            Set<String> whitelist = (Set<String>) inputStream.readObject();
+            LOGGER.debug(whitelist);
+            Controller.clearUsersArea();
+            for (String username : whitelist) {
+                Controller.addUsers(username);
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void readGroups() {
+        ServerRequest getGroupList = new ServerRequest("groupList", "");
+        try {
+            outputStream.writeObject(getGroupList);
+            List<String> groupList = (List<String>) inputStream.readObject();
+            for (String groupName : groupList) {
+                Controller.addGroup(groupName);
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }
 

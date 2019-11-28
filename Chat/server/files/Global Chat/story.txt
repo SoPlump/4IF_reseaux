@@ -31,3 +31,7 @@ Brice : OOps
 Brice : Bonjour à vous
 Brice : ça
 Brice : Yes
+Sophie : Salut
+Brice : Salut ça va ?
+Sophie : Hello
+Brice : Salut Sophie

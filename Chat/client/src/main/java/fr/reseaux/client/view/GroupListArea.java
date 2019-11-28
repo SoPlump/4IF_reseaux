@@ -46,6 +46,7 @@ public class GroupListArea extends ScrollPane {
         this.groupItems.add(new Label(""));
         this.groupList.getChildren().add(groupItems.get(0));
         this.groupList.getChildren().add(groupItems.get(1));
+        this.setContent(groupList);
         i = 2;
     }
 }

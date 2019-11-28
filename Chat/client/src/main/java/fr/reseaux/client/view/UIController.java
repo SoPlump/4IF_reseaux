@@ -58,6 +58,8 @@ public class UIController {
 
     private GroupListArea groupListArea;
 
+    private Button refreshButton;
+
     public UIController(Stage stage, Controller controller) {
         this.stage = stage;
 
@@ -71,6 +73,7 @@ public class UIController {
         this.leftFlow = new FlowPane();
         this.userListArea = new UserListArea();
         this.groupListArea = new GroupListArea();
+        this.refreshButton = new Button();
 
         // Login page
         this.loginPage = new LoginPage(this);
@@ -101,6 +104,16 @@ public class UIController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        });
+
+        // Refresh button
+        this.refreshButton.setText("Rafraichir");
+        this.refreshButton.addEventHandler(ActionEvent.ACTION, actionEvent -> {
+            LOGGER.debug("CLlocalIC SUR LE BOUTON RAFRAICHIR");
+            Controller.clearUsersArea();
+            Controller.getClient().readUsers(Controller.getClient().getCurrentGroup());
+            Controller.clearGroupsArea();
+            Controller.getClient().readGroups();
         });
 
         this.messageArea.setOnKeyPressed(event -> {
@@ -155,6 +168,7 @@ public class UIController {
         this.leftFlow.getChildren().add(groupName);
         this.leftFlow.getChildren().add(userListArea);
         this.leftFlow.getChildren().add(groupListArea);
+        //this.leftFlow.getChildren().add(refreshButton);
     }
 
     public void loadRegisterPage() {
@@ -231,6 +245,10 @@ public class UIController {
 
     public void addGroup(String groupName) {
         this.groupListArea.addGroup(groupName);
+    }
+
+    public void clearGroupsArea() {
+        this.groupListArea.clearArea();
     }
 }
 
