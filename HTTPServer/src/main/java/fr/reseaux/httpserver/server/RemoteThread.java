@@ -167,7 +167,7 @@ public class RemoteThread extends Thread {
             try {
                 response.addHeader("Content-length: " + response.getResponseBody().length);
                 LOGGER.debug(response.toString());
-                dataOutStream.write(response.toString().getBytes(), 0, response.toString().getBytes().length);
+                dataOutStream.write(response.getByteResponse(), 0, response.getByteResponse().length);
                 dataOutStream.flush();
                 dataOutStream.close();
             } catch (IOException e) {
@@ -243,16 +243,55 @@ public class RemoteThread extends Thread {
 
     public void httpHeadMethod() {
         Response response = new Response();
+        try {
+            response.addHeader("Content-Type: text/html");
+            response.addHeader("Server: Bot");
 
-        response.addHeader("Content-Type: text/html");
-        response.addHeader("Server: Bot");
+            String body = "";
 
-        String body = "";
+            LOGGER.debug(request.getPath());
+            request.setPath(request.getPath().replace("//", "/"));
+            if (request.getPath().trim().equals("/")) {
+                request.setPath("/index.html");
+            }
 
-        LOGGER.debug(request.getPath());
-        request.setPath(request.getPath().replace("//", "/"));
-        if (request.getPath().trim().equals("/")) {
-            request.setPath("/index.html");
+            File file = new File("src/main/resources" + request.getPath());
+            if (file.exists()) {
+                LOGGER.debug(file.getAbsolutePath());
+                BufferedReader fileStream = new BufferedReader(new FileReader(file));
+
+
+                //StringBuilder body = new StringBuilder();
+                response.addHeader("Content-length: " + Files.readAllBytes(file.toPath()).length);
+                response.setStatusCode(200);
+                /*String line;
+                while ((line = fileStream.readLine()) != null) {
+                    body.append(line + "\n");
+                }
+                LOGGER.debug(body.toString());
+                response.setStatusCode(200);
+                response.setResponseBody(body.toString().getBytes());*/
+            } else {
+                response.setStatusCode(404);
+                response.setResponseBody(("<h1>404 Not Found</h1>").getBytes());
+            }
+
+        } catch (IOException e) {
+            response.setStatusCode(404);
+            response.setResponseBody(("<h1>404 Not Found</h1>").getBytes());
+        } catch (
+                Exception e) {
+            response.setStatusCode(500);
+            response.setResponseBody(("<h1>500 Internal Server Error</h1>").getBytes());
+        } finally {
+            try {
+                LOGGER.debug(response.toString());
+                dataOutStream.write(response.toString().getBytes(), 0, response.toString().getBytes().length);
+                dataOutStream.flush();
+                dataOutStream.close();
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
 
     }
@@ -263,14 +302,14 @@ public class RemoteThread extends Thread {
         response.addHeader("Content-Type: text/html");
         response.addHeader("Server: Bot");
 
-        String body ="";
+        String body = "";
 
         parseBody();
         if (request.getPath().trim().equals("/")) {
             request.setPath("/index.html");
         }
 
-        if("/index.html".equals(request.getPath())) {
+        if ("/index.html".equals(request.getPath())) {
             response.setStatusCode(500);
             body = "<h1>Cannot change index page</h1>";
         }
