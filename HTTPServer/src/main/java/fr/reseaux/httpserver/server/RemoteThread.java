@@ -25,6 +25,8 @@ public class RemoteThread extends Thread {
 
     private DataOutputStream dataOutStream;
 
+    private static int idImage;
+
     public RemoteThread(Socket remoteSocket) {
         this.remoteSocket = remoteSocket;
         try {
@@ -75,6 +77,7 @@ public class RemoteThread extends Thread {
 
             String line = inStream.readLine();
             while (!line.equals("")) {
+                LOGGER.debug(line);
                 request.addHeader(line);
                 line = inStream.readLine();
             }
@@ -177,10 +180,29 @@ public class RemoteThread extends Thread {
     private void httpPostMethod() {
         Response response = new Response();
         try {
-            response.addHeader("Content-Type: text/html");
-            response.addHeader("Server: Bot");
 
-            String body = "<h1> Bienvenue " + request.getRequestBodyElement("username") + "</h1>";
+            String path = request.getPath();
+            String body = null;
+            ++idImage;
+
+            if("/downloadFile".equals(path)) {
+                File file = new File("src/main/resources/image.jpg");
+                file.createNewFile();
+                response.addHeader("Content-Type: " + Files.probeContentType(file.toPath()));
+                response.addHeader("Server: Bot");
+                body = request.getRequestBodyElement("image");
+
+                //LOGGER.debug(request.getFirstLine());
+                //LOGGER.debug(request.getRequestBody());
+                //LOGGER.debug(request.);
+            } else if ("/createUser".equals(path)) {
+                response.addHeader("Content-Type: text/html");
+                response.addHeader("Server: Bot");
+                body = "<h1> Bienvenue " + request.getRequestBodyElement("username") + "</h1>";
+            }
+
+
+
 
             response.setStatusCode(200);
             response.setResponseBody(body.getBytes());

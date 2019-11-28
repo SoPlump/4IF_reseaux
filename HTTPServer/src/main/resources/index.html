@@ -8,17 +8,25 @@
 </head>
 <body>
 
-<form method="post">
+<form method="post" action="createUser">
     <dir>
-    <label for="username">Username : </label>
+    <label for="username">Username: </label>
     <input name="username" id="username" value="SoPlump">
     </dir>
     <dir>
-    <label for="password">Password : </label>
+    <label for="password">Password: </label>
     <input name="password" id="password" value="mdp">
     </dir>
     <button>Send data</button>
 </form>
+
+<form method="post" action="downloadFile">
+    <label for="image">Choose a file: </label>
+    <input type="file"
+           id="image" name="image"
+           accept="image/png, image/jpeg">
+</form>
+
 
 </body>
 </html>
