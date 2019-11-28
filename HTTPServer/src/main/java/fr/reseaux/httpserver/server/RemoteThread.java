@@ -218,7 +218,15 @@ public class RemoteThread extends Thread {
                 //LOGGER.debug(request.getFirstLine());
                 //LOGGER.debug(request.getRequestBody());
                 //LOGGER.debug(request.);
-            } else if ("/createUser".equals(path)) {
+            }
+            else if ("/createUser".equals(path)) {
+                File file = new File("src/main/resources/users" + idImage + ".txt");
+                file.createNewFile();
+                FileWriter writer = new FileWriter(file);
+                writer.append(request.getRequestBodyElement("username") + "\n");
+                writer.close();
+                ++idImage;
+
                 response.addHeader("Content-Type: text/html");
                 response.addHeader("Server: Bot");
                 body = "<h1> Bienvenue " + request.getRequestBodyElement("username") + "</h1>";
