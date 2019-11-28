@@ -93,10 +93,13 @@ public class RemoteThread extends Thread {
                     httpPostMethod();
                     break;
                 case "PUT":
-//                    httpPutMethod();
+                    httpPutMethod();
                     break;
                 case "DELETE":
                     httpDeleteMethod();
+                    break;
+                case "HEAD":
+                    httpHeadMethod();
                     break;
             }
         } catch (Exception e) {
@@ -124,12 +127,7 @@ public class RemoteThread extends Thread {
 
     private void httpGetMethod() {
         Response response = new Response();
-        boolean isGet = true;
         try {
-            if (request.getFirstLine().contains("head=")) {
-                request.setPath("/" + getAttribute("head"));
-                isGet = false;
-            }
             LOGGER.debug(request.getPath());
             request.setPath(request.getPath().replace("//", "/"));
             if (request.getPath().trim().equals("/")) {
@@ -141,7 +139,7 @@ public class RemoteThread extends Thread {
                 LOGGER.debug(file.getAbsolutePath());
                 BufferedReader fileStream = new BufferedReader(new FileReader(file));
 
-                response.addHeader("Content-Type: "+ Files.probeContentType(file.toPath()));
+                response.addHeader("Content-Type: " + Files.probeContentType(file.toPath()));
                 response.addHeader("Server: Bot");
                 //StringBuilder body = new StringBuilder();
                 response.setResponseBody(Files.readAllBytes(file.toPath()));
@@ -167,15 +165,9 @@ public class RemoteThread extends Thread {
             response.setResponseBody(("<h1>500 Internal Server Error</h1>").getBytes());
         } finally {
             try {
-                if (isGet) {
-                    response.addHeader("Content-length: " + response.getResponseBody().length);
-                    LOGGER.debug(response.getByteResponse().length);
-                    dataOutStream.write(response.getByteResponse(), 0, response.getByteResponse().length);
-                } else {
-                    response.addHeader("Content-length: " + response.getResponseBody().length);
-                    LOGGER.debug(response.toString());
-                    dataOutStream.write(response.toString().getBytes(), 0, response.toString().getBytes().length);
-                }
+                response.addHeader("Content-length: " + response.getResponseBody().length);
+                LOGGER.debug(response.toString());
+                dataOutStream.write(response.toString().getBytes(), 0, response.toString().getBytes().length);
                 dataOutStream.flush();
                 dataOutStream.close();
             } catch (IOException e) {
@@ -225,10 +217,10 @@ public class RemoteThread extends Thread {
             LOGGER.debug(file.exists());
             LOGGER.debug(file.getAbsolutePath());
             if (file.exists()) {
-                if("/index.html".equals(request.getPath())) {
+                if ("/index.html".equals(request.getPath())) {
                     response.setStatusCode(500);
-                    body = "<h1>Couldn't delete file</h1>";
-                } else if(file.delete()) {
+                    body = "<h1>Cannot change index page</h1>";
+                } else if (file.delete()) {
                     response.setStatusCode(200);
                     body = "<h1>File deleted</h1>";
                 } else {
@@ -249,21 +241,40 @@ public class RemoteThread extends Thread {
         }
     }
 
+    public void httpHeadMethod() {
+        Response response = new Response();
 
-    private String getAttribute(String attribute) {
-        String[] path = request.getPath().split("\\?|&");
-        for (String parts : path) {
-            if (parts.startsWith(attribute + "=")) {
-                LOGGER.debug("We return : " + parts.substring(attribute.length() + 1));
-                return parts.substring(attribute.length() + 1);
-            }
+        response.addHeader("Content-Type: text/html");
+        response.addHeader("Server: Bot");
+
+        String body = "";
+
+        LOGGER.debug(request.getPath());
+        request.setPath(request.getPath().replace("//", "/"));
+        if (request.getPath().trim().equals("/")) {
+            request.setPath("/index.html");
         }
-        return null;
+
     }
 
-    private String getFileExtension(File file) {
-        LOGGER.debug("Extension : " + file.getAbsolutePath().substring(file.getAbsolutePath().indexOf(".") - 1));
-        return file.getAbsolutePath().substring(file.getAbsolutePath().indexOf(".") + 1);
+    private void httpPutMethod() {
+        Response response = new Response();
+
+        response.addHeader("Content-Type: text/html");
+        response.addHeader("Server: Bot");
+
+        String body ="";
+
+        parseBody();
+        if (request.getPath().trim().equals("/")) {
+            request.setPath("/index.html");
+        }
+
+        if("/index.html".equals(request.getPath())) {
+            response.setStatusCode(500);
+            body = "<h1>Cannot change index page</h1>";
+        }
+
     }
 /*
     public void httpPutMethod() {
