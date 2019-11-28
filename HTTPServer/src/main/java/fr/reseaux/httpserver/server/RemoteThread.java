@@ -77,7 +77,6 @@ public class RemoteThread extends Thread {
 
             String line = inStream.readLine();
             while (!line.equals("")) {
-                LOGGER.debug(line);
                 request.addHeader(line);
                 line = inStream.readLine();
             }
@@ -207,8 +206,11 @@ public class RemoteThread extends Thread {
             response.setStatusCode(200);
             response.setResponseBody(body.getBytes());
 
-            outStream.println(response);
-            outStream.flush();
+            dataOutStream.write(response.getByteResponse(), 0, response.getByteResponse().length);
+            dataOutStream.flush();
+            dataOutStream.close();
+            //outStream.println(response);
+            //outStream.flush();
 
         } catch (Exception e) {
             response.setStatusCode(500);
