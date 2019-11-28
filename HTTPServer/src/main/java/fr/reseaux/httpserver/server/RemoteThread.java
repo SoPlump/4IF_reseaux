@@ -233,7 +233,7 @@ public class RemoteThread extends Thread {
             }
             response.setResponseBody(body.getBytes());
 
-            outStream.println(response);
+            dataOutStream.write()
             outStream.flush();
 
         } catch (Exception e) {
@@ -314,16 +314,16 @@ public class RemoteThread extends Thread {
                 body = "<h1>Cannot change index page</h1>";
             } else {
 
-                String []pathToFile = request.getPath().split("/");
+                String[] pathToFile = request.getPath().split("/");
                 int i;
-                String actualPath="src/main/resources";
+                String actualPath = "src/main/resources";
                 File actualFile;
-                for(i=0; i< pathToFile.length; i++) {
+                for (i = 0; i < pathToFile.length; i++) {
                     actualPath = actualPath + "/" + pathToFile[i];
                     actualFile = new File(actualPath);
-                   // if(actualPath.di) {
+                    // if(actualPath.di) {
 
-                  //  }
+                    //  }
                 }
 
 
@@ -365,6 +365,7 @@ public class RemoteThread extends Thread {
                 LOGGER.error(e.getMessage(), e);
             }
         }
+    }
 /*
     public void httpPutMethod() {
         Response response = new Response();
