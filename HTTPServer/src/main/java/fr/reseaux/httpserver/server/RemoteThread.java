@@ -195,12 +195,15 @@ public class RemoteThread extends Thread {
                 response.addHeader("Server: Bot");
                 //body = request.getRequestBodyElement("image");
 
-                String imageBody = request.getRequestBody().split("\n\n")[2];
-                LOGGER.info(imageBody);
+                String imageBody = request.getRequestBody().split("\n\n")[3];
+
+                Files.write(file.toPath(), imageBody.getBytes());
+
+                //LOGGER.info(imageBody);
                 //FileWriter writer = new FileWriter(new File("src/main/resources/image.jpg"));
                 //writer.write(imageBody);
 
-                Files.write(new File("src/main/resources/image.jpg").toPath(),imageBody.getBytes(StandardCharsets.UTF_16));
+                //Files.write(new File("src/main/resources/image.jpg").toPath(),imageBody.getBytes(StandardCharsets.UTF_16));
                 //BufferedImage bImage = ImageIO.read(new File("src/main/resources/image.jpg");
                 //ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 //ImageIO.write(bImage, "jpg", bos );
@@ -210,7 +213,15 @@ public class RemoteThread extends Thread {
                 //LOGGER.debug(request.getFirstLine());
                 //LOGGER.debug(request.getRequestBody());
                 //LOGGER.debug(request.);
-            } else if ("/createUser".equals(path)) {
+            }
+            else if ("/createUser".equals(path)) {
+                File file = new File("src/main/resources/users" + idImage + ".txt");
+                file.createNewFile();
+                FileWriter writer = new FileWriter(file);
+                writer.append(request.getRequestBodyElement("username") + "\n");
+                writer.close();
+                ++idImage;
+
                 response.addHeader("Content-Type: text/html");
                 response.addHeader("Server: Bot");
                 body = "<h1> Bienvenue " + request.getRequestBodyElement("username") + "</h1>";
