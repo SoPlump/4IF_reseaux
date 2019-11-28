@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.LookupOp;
 import java.io.*;
+import java.lang.reflect.Array;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -35,7 +36,7 @@ public class RemoteThread extends Thread {
     public RemoteThread(Socket remoteSocket) {
         this.remoteSocket = remoteSocket;
         try {
-            this.inStream = new BufferedReader(new InputStreamReader(remoteSocket.getInputStream()));
+            //this.inStream = new BufferedReader(new InputStreamReader(remoteSocket.getInputStream()));
             this.outStream = new PrintWriter(remoteSocket.getOutputStream());
             this.dataOutStream = new DataOutputStream(remoteSocket.getOutputStream());
             this.dataInputStream = new DataInputStream(remoteSocket.getInputStream());
@@ -65,16 +66,45 @@ public class RemoteThread extends Thread {
 
             //LOGGER.debug("Parsing request");
 
-            String firstLine = inStream.readLine();
-            if (firstLine == null) {
+            //String firstLine = inStream.readLine();
+
+            boolean headersFound = false;
+            byte[] tempHeads = new byte[1024];
+            int i = 0;
+            LOGGER.info(i);
+            int combo = 0;
+            String headersString = "";
+            while(!headersFound && i < 1024) {
+                tempHeads[i] = dataInputStream.readByte();
+                LOGGER.info(i);
+                if((combo%2 == 0 && tempHeads[i] == 13) || (combo%2 == 1 && tempHeads[i] == 10)) {
+                    combo = combo + 1;
+                } else {
+                    combo = 0;
+                }
+                i++;
+                if (combo == 4) {
+                    byte [] nonNullHeader = new byte[i];
+                    System.arraycopy(tempHeads, 0, nonNullHeader, 0, i);
+                    headersString = new String(nonNullHeader);
+                    headersFound = true;
+                }
+            }
+
+            String[] headers = headersString.replace("\r\n", "\n").split("\n");
+            LOGGER.debug("HEADERS : " + headersString);
+
+            if (headers.length == 0) {
                 throw new NullPointerException();
             }
 
+            LOGGER.debug("BYTES : "+ Arrays.toString(tempHeads));
+
             //10 13 10 13
 
-            this.request.setFirstLine(firstLine);
-            LOGGER.info(firstLine);
-            String[] splitFirstLine = firstLine.split(" ");
+            this.request.setFirstLine(headers[0]);
+            LOGGER.info(headers[0]);
+            String[] splitFirstLine = headers[0].split(" ");
             if (splitFirstLine.length != 3) {
                 throw new InvalidParameterException();
             }
@@ -83,10 +113,13 @@ public class RemoteThread extends Thread {
 
             // Parsing all the header
 
-            String line = inStream.readLine();
-            while (!line.equals("")) {
+            //String line = inStream.readLine();
+            /*while (!line.equals("")) {
                 request.addHeader(line);
                 line = inStream.readLine();
+            }*/
+            for (int j = 1; j < headers.length; j++) {
+                request.addHeader(headers[j]);
             }
 
             LOGGER.debug("HEADER : " + request.getRequestHeader());
@@ -115,19 +148,21 @@ public class RemoteThread extends Thread {
 
     private void parseBody() {
         try {
-            DataInputStream inputStream = new DataInputStream(remoteSocket.getInputStream());
+            //DataInputStream inputStream = new DataInputStream(remoteSocket.getInputStream());
             int contentLength = Integer.parseInt(request.getRequestHeader().get("Content-Length"));
             //StringBuilder body = new StringBuilder();
 
             byte[] body = new byte[contentLength];
+            //int j = 0;
             /*
             for (int i = 0; i < contentLength; ++i) {
                 body.append((char) inStream.read());
             }
 
              */
-            for (int i = 0; i < contentLength; ++i) {
-                body[i] = (byte)inputStream.readByte();
+            for (int i = 0; i < contentLength; i++) {
+                //LOGGER.info(i);
+                body[i] = dataInputStream.readByte();
             }
 
             request.setRequestBody(body);
@@ -211,7 +246,7 @@ public class RemoteThread extends Thread {
                 //body = request.getRequestBodyElement("image");
 
                 //String imageBody = new String(request.getRequestBody()).split("\n\n")[1];
-                LOGGER.info(request.getRequestBody());
+                LOGGER.info(Arrays.toString(request.getRequestBody()));
                 //FileWriter writer = new FileWriter(new File("src/main/resources/image.jpg"));
                 //writer.write(imageBody);
 
