@@ -11,6 +11,7 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.InvalidParameterException;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 public class RemoteThread extends Thread {
@@ -112,13 +113,20 @@ public class RemoteThread extends Thread {
             int contentLength = Integer.parseInt(request.getRequestHeader().get("Content-Length"));
             StringBuilder body = new StringBuilder();
 
+            //byte[] body = new byte[contentLength];
+
             for (int i = 0; i < contentLength; ++i) {
                 body.append((char) inStream.read());
             }
-
-            request.setRequestBody(body.toString());
+/*
+            for (int i = 0; i < contentLength; ++i) {
+                body[i] = (byte)inStream.read();
+            }
+*/
+            request.setRequestBody(body.toString().getBytes());
 
             LOGGER.debug("BODY : " + body.toString());
+            LOGGER.warn("BODY : " + Arrays.toString(body.toString().getBytes()));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -195,12 +203,12 @@ public class RemoteThread extends Thread {
                 response.addHeader("Server: Bot");
                 //body = request.getRequestBodyElement("image");
 
-                String imageBody = request.getRequestBody().split("\n\n")[2];
+                String imageBody = new String(request.getRequestBody()).split("\n\n")[1];
                 LOGGER.info(imageBody);
                 //FileWriter writer = new FileWriter(new File("src/main/resources/image.jpg"));
                 //writer.write(imageBody);
 
-                Files.write(new File("src/main/resources/image.jpg").toPath(),imageBody.getBytes(StandardCharsets.UTF_16));
+                Files.write(new File("src/main/resources/image.jpg").toPath(),imageBody.getBytes());
                 //BufferedImage bImage = ImageIO.read(new File("src/main/resources/image.jpg");
                 //ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 //ImageIO.write(bImage, "jpg", bos );

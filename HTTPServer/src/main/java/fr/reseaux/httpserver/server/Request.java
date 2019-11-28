@@ -27,7 +27,7 @@ public class Request {
 
     private HashMap<String, String> requestHeader;
 
-    private String requestBody;
+    private byte[] requestBody;
 
     private String path;
 
@@ -61,11 +61,11 @@ public class Request {
         this.requestHeader.put(header[0], header[1]);
     }
 
-    public String getRequestBody() {
+    public byte[] getRequestBody() {
         return requestBody;
     }
 
-    public void setRequestBody(String requestBody) {
+    public void setRequestBody(byte[] requestBody) {
         this.requestBody = requestBody;
     }
 
