@@ -96,6 +96,7 @@ public class RemoteThread extends Thread {
 //                    httpPutMethod();
                     break;
                 case "DELETE":
+                    httpDeleteMethod();
                     break;
             }
         } catch (Exception e) {
@@ -140,11 +141,7 @@ public class RemoteThread extends Thread {
                 LOGGER.debug(file.getAbsolutePath());
                 BufferedReader fileStream = new BufferedReader(new FileReader(file));
 
-                if (ImageIO.read(file) != null) {
-                    response.addHeader("Content-Type: image/"+getFileExtension(file));
-                } else {
-                    response.addHeader("Content-type: text/html");
-                }
+                response.addHeader("Content-Type: "+ Files.probeContentType(file.toPath()));
                 response.addHeader("Server: Bot");
                 //StringBuilder body = new StringBuilder();
                 response.setResponseBody(Files.readAllBytes(file.toPath()));
@@ -175,7 +172,7 @@ public class RemoteThread extends Thread {
                     LOGGER.debug(response.getByteResponse().length);
                     dataOutStream.write(response.getByteResponse(), 0, response.getByteResponse().length);
                 } else {
-                    response.addHeader("Content-length: " +  response.getResponseBody().length);
+                    response.addHeader("Content-length: " + response.getResponseBody().length);
                     LOGGER.debug(response.toString());
                     dataOutStream.write(response.toString().getBytes(), 0, response.toString().getBytes().length);
                 }
@@ -194,6 +191,7 @@ public class RemoteThread extends Thread {
             response.addHeader("Content-Type: text/html");
             response.addHeader("Server: Bot");
 
+
             String body = "";
 
             response.setStatusCode(200);
@@ -207,6 +205,51 @@ public class RemoteThread extends Thread {
         }
     }
 
+    private void httpDeleteMethod() {
+        try {
+            Response response = new Response();
+
+            response.addHeader("Content-Type: text/html");
+            response.addHeader("Server: Bot");
+
+            String body = "";
+
+            LOGGER.debug(request.getPath());
+            request.setPath(request.getPath().replace("//", "/"));
+            if (request.getPath().trim().equals("/")) {
+                request.setPath("/index.html");
+            }
+
+            LOGGER.debug(request.getPath());
+            File file = new File("src/main/resources" + request.getPath());
+            LOGGER.debug(file.exists());
+            LOGGER.debug(file.getAbsolutePath());
+            if (file.exists()) {
+                if("/index.html".equals(request.getPath())) {
+                    response.setStatusCode(500);
+                    body = "<h1>Couldn't delete file</h1>";
+                } else if(file.delete()) {
+                    response.setStatusCode(200);
+                    body = "<h1>File deleted</h1>";
+                } else {
+                    response.setStatusCode(500);
+                    body = "<h1>Couldn't delete file</h1>";
+                }
+            } else {
+                response.setStatusCode(404);
+                body = "<h1>File not Found</h1>";
+            }
+            response.setResponseBody(body.getBytes());
+
+            outStream.println(response);
+            outStream.flush();
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+
     private String getAttribute(String attribute) {
         String[] path = request.getPath().split("\\?|&");
         for (String parts : path) {
@@ -219,8 +262,8 @@ public class RemoteThread extends Thread {
     }
 
     private String getFileExtension(File file) {
-        LOGGER.debug("Extension : " + file.getAbsolutePath().substring(file.getAbsolutePath().indexOf(".")-1));
-        return file.getAbsolutePath().substring(file.getAbsolutePath().indexOf(".")+1);
+        LOGGER.debug("Extension : " + file.getAbsolutePath().substring(file.getAbsolutePath().indexOf(".") - 1));
+        return file.getAbsolutePath().substring(file.getAbsolutePath().indexOf(".") + 1);
     }
 /*
     public void httpPutMethod() {
