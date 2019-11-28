@@ -298,23 +298,73 @@ public class RemoteThread extends Thread {
 
     private void httpPutMethod() {
         Response response = new Response();
+        try {
 
-        response.addHeader("Content-Type: text/html");
-        response.addHeader("Server: Bot");
+            response.addHeader("Content-Type: text/html");
+            response.addHeader("Server: Bot");
 
-        String body = "";
+            String body = "";
 
-        parseBody();
-        if (request.getPath().trim().equals("/")) {
-            request.setPath("/index.html");
-        }
+            parseBody();
+            if (request.getPath().trim().equals("/")) {
+                request.setPath("/index.html");
+            }
+            if ("/index.html".equals(request.getPath())) {
+                response.setStatusCode(500);
+                body = "<h1>Cannot change index page</h1>";
+            } else {
 
-        if ("/index.html".equals(request.getPath())) {
+                String []pathToFile = request.getPath().split("/");
+                int i;
+                String actualPath="src/main/resources";
+                File actualFile;
+                for(i=0; i< pathToFile.length; i++) {
+                    actualPath = actualPath + "/" + pathToFile[i];
+                    actualFile = new File(actualPath);
+                   // if(actualPath.di) {
+
+                  //  }
+                }
+
+
+                File file = new File("src/main/resources" + request.getPath());
+                if (file.exists()) {
+                    LOGGER.debug(file.getAbsolutePath());
+                    BufferedReader fileStream = new BufferedReader(new FileReader(file));
+
+
+                    //StringBuilder body = new StringBuilder();
+                    response.setStatusCode(200);
+                /*String line;
+                while ((line = fileStream.readLine()) != null) {
+                    body.append(line + "\n");
+                }
+                LOGGER.debug(body.toString());
+                response.setStatusCode(200);
+                response.setResponseBody(body.toString().getBytes());*/
+                } else {
+                    response.setStatusCode(404);
+                    response.setResponseBody(("<h1>404 Not Found</h1>").getBytes());
+                }
+            }
+
+        } catch (IOException e) {
+            response.setStatusCode(404);
+            response.setResponseBody(("<h1>404 Not Found</h1>").getBytes());
+        } catch (
+                Exception e) {
             response.setStatusCode(500);
-            body = "<h1>Cannot change index page</h1>";
+            response.setResponseBody(("<h1>500 Internal Server Error</h1>").getBytes());
+        } finally {
+            try {
+                LOGGER.debug(response.toString());
+                dataOutStream.write(response.toString().getBytes(), 0, response.toString().getBytes().length);
+                dataOutStream.flush();
+                dataOutStream.close();
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
-
-    }
 /*
     public void httpPutMethod() {
         Response response = new Response();
