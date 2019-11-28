@@ -28,6 +28,8 @@ public class RemoteThread extends Thread {
 
     private DataOutputStream dataOutStream;
 
+    private DataInputStream dataInputStream;
+
     private static int idImage;
 
     public RemoteThread(Socket remoteSocket) {
@@ -36,6 +38,7 @@ public class RemoteThread extends Thread {
             this.inStream = new BufferedReader(new InputStreamReader(remoteSocket.getInputStream()));
             this.outStream = new PrintWriter(remoteSocket.getOutputStream());
             this.dataOutStream = new DataOutputStream(remoteSocket.getOutputStream());
+            this.dataInputStream = new DataInputStream(remoteSocket.getInputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -66,6 +69,8 @@ public class RemoteThread extends Thread {
             if (firstLine == null) {
                 throw new NullPointerException();
             }
+
+            //10 13 10 13
 
             this.request.setFirstLine(firstLine);
             LOGGER.info(firstLine);
@@ -110,23 +115,25 @@ public class RemoteThread extends Thread {
 
     private void parseBody() {
         try {
+            DataInputStream inputStream = new DataInputStream(remoteSocket.getInputStream());
             int contentLength = Integer.parseInt(request.getRequestHeader().get("Content-Length"));
-            StringBuilder body = new StringBuilder();
+            //StringBuilder body = new StringBuilder();
 
-            //byte[] body = new byte[contentLength];
-
+            byte[] body = new byte[contentLength];
+            /*
             for (int i = 0; i < contentLength; ++i) {
                 body.append((char) inStream.read());
             }
-/*
-            for (int i = 0; i < contentLength; ++i) {
-                body[i] = (byte)inStream.read();
-            }
-*/
-            request.setRequestBody(body.toString().getBytes());
 
-            LOGGER.debug("BODY : " + body.toString());
-            LOGGER.warn("BODY : " + Arrays.toString(body.toString().getBytes()));
+             */
+            for (int i = 0; i < contentLength; ++i) {
+                body[i] = (byte)inputStream.readByte();
+            }
+
+            request.setRequestBody(body);
+
+            //LOGGER.debug("BODY : " + body.toString());
+            //LOGGER.warn("BODY : " + Arrays.toString(body.toString().getBytes()));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -203,12 +210,12 @@ public class RemoteThread extends Thread {
                 response.addHeader("Server: Bot");
                 //body = request.getRequestBodyElement("image");
 
-                String imageBody = new String(request.getRequestBody()).split("\n\n")[1];
-                LOGGER.info(imageBody);
+                //String imageBody = new String(request.getRequestBody()).split("\n\n")[1];
+                LOGGER.info(request.getRequestBody());
                 //FileWriter writer = new FileWriter(new File("src/main/resources/image.jpg"));
                 //writer.write(imageBody);
 
-                Files.write(new File("src/main/resources/image.jpg").toPath(),imageBody.getBytes());
+                Files.write(new File("src/main/resources/image.jpg").toPath(),request.getRequestBody());
                 //BufferedImage bImage = ImageIO.read(new File("src/main/resources/image.jpg");
                 //ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 //ImageIO.write(bImage, "jpg", bos );
