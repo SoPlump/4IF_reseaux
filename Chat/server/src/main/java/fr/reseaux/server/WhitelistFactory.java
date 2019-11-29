@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 public class WhitelistFactory {
 
-
+    // Adds a user to the whitelist and to the whitelist file
     public ServerResponse addUser(Set<String> whitelist, File file, String username) {
         try {
             if (whitelist.add(username)) {
@@ -24,10 +24,9 @@ public class WhitelistFactory {
             e.printStackTrace();
             return new ServerResponse(false, "User " + username + " couldn't be added.");
         }
-
-
     }
 
+    // Loads all users from the whitelist file to the whitelist List
     public Set<String> loadUsers(File file) {
         try {
             Set<String> whitelist = new ConcurrentSkipListSet<>();

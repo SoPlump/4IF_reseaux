@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+// Used to talk from Server to Client
+// Possesses a success boolean and a status that needs analysis on the client-side
 public class ServerResponse implements Serializable {
 
     private boolean success;
@@ -32,7 +34,6 @@ public class ServerResponse implements Serializable {
     }
 
     public String getRequestAttribute(String attributeName) {
-
         Pattern attributePattern = Pattern.compile(".*-" + attributeName + ":\\{(.*?)}.*");
         Matcher attributeMatcher = attributePattern.matcher(this.content);
         if (attributeMatcher.matches()) {

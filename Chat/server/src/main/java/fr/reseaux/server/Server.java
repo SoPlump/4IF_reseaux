@@ -50,22 +50,14 @@ public class Server {
             userFactory = new UserFactory();
             userList = userFactory.createUsersFromXML(new File(USERFILE));
 
-            /*
-            MulticastThread globalChat = new MulticastThread(multicastPort, (Inet4Address) Inet4Address.getByName("225.225.225.225"), "Global Chat");
-            multicastList.add(globalChat);
-            globalChat.start();
-
-            MulticastThread secondChat = new MulticastThread(multicastPort, (Inet4Address) Inet4Address.getByName("225.225.225.226"), "Secondary Chat");
-            multicastList.add(secondChat);
-            secondChat.start();
-            */
-
+            // Create groups
             loadGroups();
             for (MulticastThread thread : multicastList) {
                 LOGGER.debug(thread.getGroupName());
                 LOGGER.debug(thread.retrieveInfos());
             }
 
+            // Accepts clients
             listenSocket = new ServerSocket(Integer.parseInt(args[0])); //port
             System.out.println("Server ready...");
             int i = 0;
@@ -80,6 +72,7 @@ public class Server {
         }
     }
 
+    // Returns the multicast thread linked to a group
     static MulticastThread getMulticastThreadByName(String groupName) {
         for (MulticastThread thread : multicastList) {
             if (thread.getGroupName().equals(groupName)) {
@@ -90,6 +83,7 @@ public class Server {
         return null;
     }
 
+    // Checks if a given user is saved in the log files
     static ServerResponse connectUser(User user) {
         List<User> result = userList.stream()
                 .filter(a -> Objects.equals(a, user))
@@ -107,6 +101,7 @@ public class Server {
         return new ServerResponse(false, "");
     }
 
+    // Saves the informations of a new user in the log files
     static ServerResponse registerUser(User user) {
         List<User> result = userList.stream()
                 .filter(a -> Objects.equals(a.getUsername(), user.getUsername()))
@@ -127,6 +122,7 @@ public class Server {
         }
     }
 
+    // Creates all the multicast threads from the groups in a file
     private static void loadGroups() {
         try {
             MulticastThreadFactory groupFactory = new MulticastThreadFactory();
@@ -140,6 +136,7 @@ public class Server {
 
     }
 
+    // Creates a new multicast thread with a name and adds one user in its whitelist
     public static ServerResponse addGroup(String groupName, String username) {
         for (MulticastThread group : multicastList) {
             if (group.getGroupName().equals(groupName)) {
@@ -159,6 +156,7 @@ public class Server {
         return new ServerResponse(false, "Group couldn't be created.");
     }
 
+    // Return an Multicast Friendly IP Address from 225.225.225.1
     private static String grantIp() {
         int lastNumber = (multicastList.size() + 1) % 255;
         int thirdNumber = 225 + (multicastList.size() + 1) / 255;
@@ -166,6 +164,7 @@ public class Server {
         return newIp;
     }
 
+    // Checks if a user in already registered
     public static boolean userExists(String username) {
         for (User user: userList) {
             if (user.getUsername().equals(username)) return true;
@@ -173,6 +172,7 @@ public class Server {
         return false;
     }
 
+    // Disconnects a user by setting him disconnected in the list
     public static boolean disconnect(String username) {
         List<User> result = userList.stream()
                 .filter(a -> Objects.equals(a.getUsername(), username))
@@ -183,6 +183,7 @@ public class Server {
 
     }
 
+    // Returns the whitelist of a given group
     public static Set<String> getWhitelist(String groupName) {
         if("Global Chat".equals(groupName)) {
             Set<String> whitelist = new ConcurrentSkipListSet<>();
@@ -195,6 +196,7 @@ public class Server {
         }
     }
 
+    // Returns the list of all groups
     public static List<String> getGroups() {
         List<String> groupList = new Vector<>();
         for (MulticastThread multicastThread : multicastList) {

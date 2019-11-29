@@ -14,10 +14,6 @@ public class HistoryFactory {
         try {
             if (message.getContent().startsWith("/")) return;
             System.out.println(message);
-            //File file = new File("files/story.txt");
-            //System.out.println(file.exists());
-            //System.out.println(file.canWrite());
-            //PrintStream printStream = new PrintStream(file);
             BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
             writer.append(message.toString() + '\n');
             writer.close();

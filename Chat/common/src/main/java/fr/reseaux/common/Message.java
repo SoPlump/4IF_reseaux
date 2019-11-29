@@ -4,10 +4,7 @@ import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- *
- * @author sraudrant
- */
+// A message is composed of an username and a password
 public class Message implements Serializable{
 
     private String content;
@@ -19,6 +16,7 @@ public class Message implements Serializable{
         this.username = username;
     }
 
+    // Can create a message from a string that follows the form of Message.toString()
     public Message(String message) {
         message = message.replace("\n","").replace("\r", "");
         Pattern messagePattern = Pattern.compile("([a-zA-Z0-9]+?) : (.*)");

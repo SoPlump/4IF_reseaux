@@ -3,6 +3,7 @@ package fr.reseaux.common;
 import java.net.Socket;
 import java.util.Objects;
 
+// Class that is used to represent a client's account and its status at any instant on the server
 public class User {
 
     private String username;

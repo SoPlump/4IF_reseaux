@@ -72,6 +72,7 @@ public class MulticastThread
         }
     }
 
+    // Where we handle phantom requests and sends message by multicast
     public void run() {
         try {
             Message msg;

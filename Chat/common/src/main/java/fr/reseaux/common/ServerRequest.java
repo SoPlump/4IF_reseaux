@@ -9,6 +9,10 @@ import java.net.Socket;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+// Used to talk from Client to Server
+// Possesses a type and a content
+
+// Content form : -attribute1:{value1}-attribute2:{value2}...
 public class ServerRequest implements Serializable {
 
     private static final Logger LOGGER = LogManager.getLogger(ServerRequest.class);
@@ -38,6 +42,7 @@ public class ServerRequest implements Serializable {
         this.content = this.content.replace("\n", "").replace("\r", "");
     }
 
+    // Retrieves the value of an attribute
     public String getRequestAttribute(String attributeName) {
 
         Pattern attributePattern = Pattern.compile(".*-" + attributeName + ":\\{(.*?)}.*");
