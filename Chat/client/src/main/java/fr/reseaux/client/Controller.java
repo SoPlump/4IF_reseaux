@@ -46,6 +46,18 @@ public class Controller {
         }
     }
 
+    public static void disconnect() {
+        try {
+            Message leaveMessage = new Message(client.getUsername() + " vient de se déconnecter.", "server");
+            client.doWrite(leaveMessage);
+            Controller.client.echoSocket.close();
+            Controller.uiController.loadServerConnectionPage();
+            //System.exit(1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void printMessage() {
         Vector<Message> messageToPrint = client.getMessageList();
         for (Message message : messageToPrint) {

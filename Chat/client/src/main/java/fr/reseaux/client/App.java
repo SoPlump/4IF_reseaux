@@ -17,6 +17,8 @@ public class App extends Application {
 
     private static String[] args;
 
+    private Controller controller;
+
     private static final Logger LOGGER = LogManager.getLogger(App.class);
 
     /**
@@ -35,7 +37,7 @@ public class App extends Application {
         );
 
         // create and set controller
-        Controller controller = new Controller(args);
+        controller = new Controller(args);
         UIController uiController = new UIController(stage, controller);
         controller.setUiController(uiController);
         loader.setController(uiController);
@@ -67,8 +69,10 @@ public class App extends Application {
         launch(args);
     }
 
-    public static void closeApp() {
-
+    @Override
+    public void stop() throws Exception {
+        controller.getClient().close();
+        super.stop();
     }
 
 }
