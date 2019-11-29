@@ -151,11 +151,7 @@ public class Client extends Thread {
             if (msg.getContent().startsWith("/")) {
 
                 if (msg.getContent().equals("/quit")) {
-                    this.outputStream.writeObject(new ServerRequest("disconnect", "-username:{" + username + "}"));
-                    ServerResponse response = (ServerResponse) inputStream.readObject();
-                    if (response.isSuccess()) {
-                        Controller.closeApp(); //todo : close socket
-                    }
+                    close();
                 } else if (msg.getContent().equals("/clear")) {
                     Controller.clearArea();
                 } else if (msg.getContent().startsWith("/add")) {
@@ -164,6 +160,8 @@ public class Client extends Thread {
                     joinGroup(msg);
                 } else if (msg.getContent().startsWith("/create")) {
                     createGroup(msg);
+                } else if (msg.getContent().startsWith("/leave")) {
+                    disconnect();
                 }
             } else {
                 this.outputStream.writeObject(new ServerRequest("message", "-content:{" + msg.getContent() + "}-username:{" + msg.getUsername() + "}"));
@@ -380,6 +378,32 @@ public class Client extends Thread {
                 Controller.addGroup(groupName);
             }
         } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void close() {
+        try {
+            this.outputStream.writeObject(new ServerRequest("disconnect", "-username:{" + username + "}"));
+            ServerResponse response = (ServerResponse) inputStream.readObject();
+            if (response.isSuccess()) {
+                Controller.closeApp(); //todo : close socket
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            Controller.printError("Couldn't disconnect from server.");
+            e.printStackTrace();
+        }
+    }
+
+    public void disconnect() {
+        try {
+            this.outputStream.writeObject(new ServerRequest("disconnect", "-username:{" + username + "}"));
+            ServerResponse response = (ServerResponse) inputStream.readObject();
+            if (response.isSuccess()) {
+                Controller.disconnect(); //todo : close socket
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            Controller.printError("Couldn't disconnect from server.");
             e.printStackTrace();
         }
     }

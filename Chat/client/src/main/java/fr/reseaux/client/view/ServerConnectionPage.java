@@ -34,8 +34,8 @@ public class ServerConnectionPage extends VBox {
         this.setStyle("-fx-spacing:10; -fx-padding:100; -fx-alignment:center");
         this.setAlignment(Pos.CENTER);
 
-        this.ipAddressField = new TextField();
-        this.portField = new PasswordField();
+        this.ipAddressField = new TextField("localhost");
+        this.portField = new TextField("1234");
         this.connexionButton = new Button("Connect to Server");
         this.connexionButton.setMinWidth(70.0);
 

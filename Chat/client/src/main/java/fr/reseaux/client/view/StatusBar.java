@@ -41,9 +41,11 @@ public class StatusBar extends HBox {
         this.getChildren().add(this.scrollPane);
         this.scrollPane.setContent(this.messageStatus);
 
+
         this.messageStatus.setText("Welcome to the SendgIF Chat System !");
         this.scrollPane.prefWidthProperty().bind(this.widthProperty());
         this.scrollPane.setMaxHeight(20);
+        this.setPrefWidth(Double.MAX_VALUE);
     }
 
     /**

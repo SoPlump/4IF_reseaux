@@ -1,37 +1,4 @@
-308 : Bonjour a tous dans ce groupe principal
-38 : quit
-bidule : Hello
-bidule : Salutations ?
-bidule : Allo ?
-bidule : Oui je t'entends
-bidule : Ah cool :)
-bidule : Je switch sur l'autre groupe
-Brice : Bonjour
-bidule : Tu aimes le fromage ?
-bidule : Non mais avant de me faire taper je sors
-Brice : Hellow
-Sophie : Nï¿½
-Brice : Nice ï¿½a marche reste plus qu'a regler les souciss d'unicode
-Brice : che
-spartacus : Bonjour ï¿½ vous
-Brice : Bonjour
-Brice : Why hello there
-<<<<<<< HEAD
-Sophie : Salut Brice ! t'es un bg
-Sophie : Bonjour Brice :)
-Brice : Plop !
-Brice : Attends wait ?
-Brice : LOL
-Brice : ç
-Brice : Aw shit here we go again
-Brice : à
-Brice : Erm
-Brice : AH
-Brice : OOps
-Brice : Bonjour à vous
-Brice : ça
-Brice : Yes
-Sophie : Salut
-Brice : Salut ça va ?
-Sophie : Hello
-Brice : Salut Sophie
+Sophie : Plop Brice je vais t'ajouter dans le groupe "binome"
+Sophie : brice va dans le groupe binome
+prof : coucou
+Sophie : bonuoru*
