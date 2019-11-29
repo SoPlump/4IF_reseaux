@@ -4,16 +4,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.awt.image.LookupOp;
 import java.io.*;
-import java.lang.reflect.Array;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.InvalidParameterException;
 import java.util.Arrays;
-import java.util.regex.Pattern;
 
 public class RemoteThread extends Thread {
 
@@ -31,7 +26,7 @@ public class RemoteThread extends Thread {
 
     private DataInputStream dataInputStream;
 
-    private static int idImage;
+    private static int idUser;
 
     public RemoteThread(Socket remoteSocket) {
         this.remoteSocket = remoteSocket;
@@ -234,11 +229,8 @@ public class RemoteThread extends Thread {
 
             String path = request.getPath();
             String body = null;
-            ++idImage;
-            LOGGER.info("HELLO WORLD 24");
 
             if("/downloadFile".equals(path)) {
-                LOGGER.info("HELLO WORLD 25");
                 File file = new File("src/main/resources/image.jpg");
                 file.createNewFile();
                 response.addHeader("Content-Type: " + Files.probeContentType(file.toPath()));
@@ -262,12 +254,12 @@ public class RemoteThread extends Thread {
                 //LOGGER.debug(request.);
             }
             else if ("/createUser".equals(path)) {
-                File file = new File("src/main/resources/users" + idImage + ".txt");
+                File file = new File("src/main/resources/users" + idUser + ".txt");
                 file.createNewFile();
                 FileWriter writer = new FileWriter(file);
-                writer.append(request.getRequestBodyElement("username") + "\n");
+                writer.append(request.getRequestBodyElement("username") + "\n" + request.getRequestBodyElement("password"));
                 writer.close();
-                ++idImage;
+                ++idUser;
 
                 response.addHeader("Content-Type: text/html");
                 response.addHeader("Server: Bot");
