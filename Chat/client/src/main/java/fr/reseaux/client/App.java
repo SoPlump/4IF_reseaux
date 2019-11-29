@@ -1,12 +1,9 @@
 package fr.reseaux.client;
 
 import fr.reseaux.client.view.UIController;
-import fr.reseaux.common.Message;
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,11 +44,14 @@ public class App extends Application {
 
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
-                case F10: controller.getClient().joinGroup("Global Chat"); break;
-                case F11: controller.getClient().joinGroup("Secondary Chat"); break;
+                case F10:
+                    controller.getClient().joinGroup("Global Chat");
+                    break;
+                case F11:
+                    controller.getClient().joinGroup("Secondary Chat");
+                    break;
             }
         });
-
 
 
         // init and show stage

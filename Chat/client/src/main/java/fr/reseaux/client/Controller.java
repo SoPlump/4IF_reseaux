@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.Vector;
 
 public class Controller {
+
     private static final Logger LOGGER = LogManager.getLogger(Controller.class);
 
     private static UIController uiController;
@@ -21,8 +22,6 @@ public class Controller {
     private static Client client;
 
     public Controller(String[] args) throws IOException {
-        //Controller.client = new Client(args);
-        //Controller.client.start();
     }
 
     public void setUiController(UIController uiController) {

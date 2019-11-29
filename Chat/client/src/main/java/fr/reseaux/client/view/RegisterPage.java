@@ -3,11 +3,8 @@ package fr.reseaux.client.view;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 
 public class RegisterPage extends VBox {
 
@@ -41,6 +38,17 @@ public class RegisterPage extends VBox {
         this.registerButton = new Button("Register now !");
         this.registerButton.setMinWidth(70.0);
 
+        this.usernameField.setPromptText("username");
+        this.passwordField.setPromptText("password");
+        this.confirmationPasswordField.setPromptText("confirm your password");
+
+        errorLabel = new Label();
+        errorLabel.setTextFill(Color.RED);
+
+        this.loadLoginPage = new Hyperlink("Go back to login.");
+
+        // handlers
+
         this.registerButton.addEventHandler(ActionEvent.ACTION, actionEvent -> {
             this.uiController.registerUser(usernameField.getText(), passwordField.getText(), confirmationPasswordField.getText());
         });
@@ -53,12 +61,6 @@ public class RegisterPage extends VBox {
             }
         });
 
-        this.usernameField.setPromptText("username");
-        this.passwordField.setPromptText("password");
-        this.confirmationPasswordField.setPromptText("confirm your password");
-
-        this.loadLoginPage = new Hyperlink("Go back to login.");
-
         loadLoginPage.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -66,8 +68,6 @@ public class RegisterPage extends VBox {
             }
         });
 
-        errorLabel = new Label();
-        errorLabel.setTextFill(Color.RED);
 
         this.getChildren().add(this.usernameField);
         this.getChildren().add(this.passwordField);

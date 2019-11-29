@@ -26,8 +26,8 @@ public class StatusBar extends HBox {
     private ScrollPane scrollPane;
 
     /**
-     *Initialise two {@link Label} as the content of a {@link ScrollPane}
-     *
+     * Initialise two {@link Label} as the content of a {@link ScrollPane}
+     * <p>
      * Initialise the css id of the {@link Label} to handle the darkMode
      */
     public StatusBar() {
@@ -40,7 +40,6 @@ public class StatusBar extends HBox {
 
         this.getChildren().add(this.scrollPane);
         this.scrollPane.setContent(this.messageStatus);
-
 
         this.messageStatus.setText("Welcome to the SendgIF Chat System !");
         this.scrollPane.prefWidthProperty().bind(this.widthProperty());

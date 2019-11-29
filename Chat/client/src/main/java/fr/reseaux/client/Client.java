@@ -26,15 +26,12 @@ public class Client extends Thread {
 
     private Message lastMsg;
 
-    public void setConnected(boolean connected) {
-        isConnected = connected;
-    }
-
     private boolean isConnected;
 
     private String currentGroup;
 
     private ObjectOutputStream outputStream;
+
     private ObjectInputStream inputStream;
 
     private Inet4Address multicastAddress;
@@ -51,9 +48,9 @@ public class Client extends Thread {
 
     Runnable updater;
 
-    Socket echoSocket = null;
-    //PrintStream socOut = null;
-    BufferedReader socIn = null;
+    private Socket echoSocket = null;
+
+    private BufferedReader socIn = null;
 
 
     /**
@@ -65,7 +62,6 @@ public class Client extends Thread {
 
         try {
             this.isConnected = false;
-            // creation socket ==> connexion
             this.echoSocket = new Socket(ipAddress, Integer.parseInt(port));
             this.socIn = new BufferedReader(
                     new InputStreamReader(echoSocket.getInputStream()));
@@ -86,35 +82,25 @@ public class Client extends Thread {
     }
 
     public void run() {
+        // used to update the UI
         updater = new Runnable() {
             @Override
             public void run() {
                 Controller.printMessage();
             }
         };
-/*
-        Runnable clearer = new Runnable() {
-            @Override
-            public void run() {
-                LOGGER.debug("Cleared");
-                Controller.clearArea();
-            }
-        };
 
- */
         joinGroup("Global Chat");
         currentGroup = "Global Chat";
         Controller.printStatus("Connected as " + username);
         readGroups();
-        //joinGroup("Secondary Chat", updater);
-        //joinGroup("Third Chat", updater);
+
         String line;
         byte[] buffer = new byte[1000];
         DatagramPacket datagramPacket = new DatagramPacket(buffer, buffer.length);
         try {
             String content;
             while (true) {
-                //LOGGER.info(isConnected);
                 multicastSocket.receive(datagramPacket);
                 content = new String(
                         datagramPacket.getData(),
@@ -122,7 +108,7 @@ public class Client extends Thread {
                         datagramPacket.getLength(),
                         StandardCharsets.UTF_8
                 );
-                lastMsg = new Message(content); //todo : recuperer usename
+                lastMsg = new Message(content);
                 messageList.add(lastMsg);
 
                 // update the UI
@@ -135,7 +121,6 @@ public class Client extends Thread {
 
         try {
             LOGGER.info("CLOSING ALL");
-            //socOut.close();
             socIn.close();
             echoSocket.close();
         } catch (IOException e) {
@@ -143,6 +128,7 @@ public class Client extends Thread {
         }
     }
 
+    // Get what the user writes
     public void doWrite(Message msg) throws IOException {
         msg.setContent(msg.getContent().replace("\n", "").replace("\r", ""));
         LOGGER.info("send message in Client " + msg.toString());
@@ -189,6 +175,7 @@ public class Client extends Thread {
             ServerRequest connectRequest = new ServerRequest("connectToGroup", "-username:{" + username + "}-groupName:{" + groupName + "}");
             outputStream.writeObject(connectRequest);
             ServerResponse response = (ServerResponse) this.inputStream.readObject();
+
             if (response.isSuccess()) {
                 String address = response.getRequestAttribute("groupAddress").replace("/", "");
                 LOGGER.info("Adresse : " + address);
@@ -199,8 +186,6 @@ public class Client extends Thread {
                 multicastAddress = (Inet4Address) Inet4Address.getByName(address);
 
                 if (currentAddress != null) {
-                    //Message leaveMessage = new Message(username + " vient de se déconnecter.", "server");
-                    //doWrite(leaveMessage);
                     multicastSocket.leaveGroup(currentAddress);
                 } else {
                     multicastSocket = new MulticastSocket(multicastPort);
@@ -213,15 +198,15 @@ public class Client extends Thread {
                 Controller.changeGroupName(groupName);
                 messageList.add(new Message("/clear", "server"));
                 LOGGER.info("Sending a request to get the story");
-                //lastMsg = new Message("Connected as " + username, "server");
-                //messageList.add(lastMsg);
                 readUsers(groupName);
 
                 Platform.runLater(updater);
+
+                // Print the story of the group
+
                 ServerRequest storyRequest = new ServerRequest("getStory", "");
                 this.outputStream.writeObject(storyRequest);
 
-                //while(true) {
                 Vector<Message> storyList = (Vector<Message>) this.inputStream.readObject();
                 if (storyList.size() != 0) {
                     for (Message message : storyList) {
@@ -229,11 +214,9 @@ public class Client extends Thread {
                         messageList.add(lastMsg);
                     }
                     Platform.runLater(updater);
-                    //  break;
                 }
                 if (noGroupJoined) noGroupJoined = false;
                 Controller.printStatus("Joined group " + groupName);
-                // }
             } else {
                 Controller.printError(response.getContent());
             }
@@ -297,7 +280,7 @@ public class Client extends Thread {
                 this.outputStream.writeObject(addRequest);
                 ServerResponse response = (ServerResponse) this.inputStream.readObject();
                 if (response.isSuccess()) {
-                    doWrite(new Message("addUser:"+userToAdd, "server"));
+                    doWrite(new Message("addUser:" + userToAdd, "server"));
                     Controller.printStatus(response.getContent());
                 } else {
                     Controller.printError(response.getContent());
@@ -342,8 +325,6 @@ public class Client extends Thread {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-
-
     }
 
     public String getCurrentGroup() {
@@ -354,9 +335,10 @@ public class Client extends Thread {
         this.currentGroup = currentGroup;
     }
 
+    // get all the users of the app
     public void readUsers(String groupName) {
         try {
-            ServerRequest userlistRequest = new ServerRequest("userList", "-groupName:{"+groupName+"}");
+            ServerRequest userlistRequest = new ServerRequest("userList", "-groupName:{" + groupName + "}");
             outputStream.writeObject(userlistRequest);
             Set<String> whitelist = (Set<String>) inputStream.readObject();
             LOGGER.debug(whitelist);
@@ -369,6 +351,7 @@ public class Client extends Thread {
         }
     }
 
+    // get all the groups of the app
     public void readGroups() {
         ServerRequest getGroupList = new ServerRequest("groupList", "");
         try {
@@ -382,12 +365,13 @@ public class Client extends Thread {
         }
     }
 
+    // disconnect and close the client socket
     public void close() {
         try {
             this.outputStream.writeObject(new ServerRequest("disconnect", "-username:{" + username + "}"));
             ServerResponse response = (ServerResponse) inputStream.readObject();
             if (response.isSuccess()) {
-                Controller.closeApp(); //todo : close socket
+                Controller.closeApp();
             }
         } catch (IOException | ClassNotFoundException e) {
             Controller.printError("Couldn't disconnect from server.");
@@ -395,17 +379,22 @@ public class Client extends Thread {
         }
     }
 
+    // disconnect the client
     public void disconnect() {
         try {
             this.outputStream.writeObject(new ServerRequest("disconnect", "-username:{" + username + "}"));
             ServerResponse response = (ServerResponse) inputStream.readObject();
             if (response.isSuccess()) {
-                Controller.disconnect(); //todo : close socket
+                Controller.disconnect();
             }
         } catch (IOException | ClassNotFoundException e) {
             Controller.printError("Couldn't disconnect from server.");
             e.printStackTrace();
         }
+    }
+
+    public void setConnected(boolean connected) {
+        isConnected = connected;
     }
 }
 

@@ -8,6 +8,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Pane;
 
 public class ChatMenuBar extends Pane {
+
     private UIController uiController;
 
     private MenuBar menuBar;

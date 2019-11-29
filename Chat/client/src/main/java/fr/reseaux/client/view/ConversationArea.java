@@ -1,6 +1,5 @@
 package fr.reseaux.client.view;
 
-import fr.reseaux.client.Controller;
 import fr.reseaux.common.Message;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -15,7 +14,7 @@ public class ConversationArea extends ScrollPane {
     private static final Logger LOGGER = LogManager.getLogger(ConversationArea.class);
 
     private List<Label> conversationItems;
-    //todo : faire une liste
+
     private Label conversationItem;
 
     private VBox conversation;
@@ -37,10 +36,6 @@ public class ConversationArea extends ScrollPane {
         conversationItems.add(new Label(msg.toString()));
         this.conversation.getChildren().add(conversationItems.get(i));
         ++i;
-    }
-
-    private void printMessage() {
-        //this.conversation.getChildren().add(conversationItems.);
     }
 
     public void clearArea() {

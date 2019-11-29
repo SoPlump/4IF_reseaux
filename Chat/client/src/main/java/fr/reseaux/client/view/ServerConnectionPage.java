@@ -1,16 +1,9 @@
 package fr.reseaux.client.view;
 
-import fr.reseaux.common.Message;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
-
-import java.io.IOException;
 
 public class ServerConnectionPage extends VBox {
 
@@ -39,6 +32,15 @@ public class ServerConnectionPage extends VBox {
         this.connexionButton = new Button("Connect to Server");
         this.connexionButton.setMinWidth(70.0);
 
+
+        this.ipAddressField.setPromptText("IP Address");
+        this.portField.setPromptText("Port");
+
+        errorLabel = new Label();
+        errorLabel.setTextFill(Color.RED);
+
+        // handlers
+
         this.connexionButton.addEventHandler(ActionEvent.ACTION, actionEvent -> {
             this.uiController.connectToServer(ipAddressField.getText(), portField.getText());
         });
@@ -50,12 +52,6 @@ public class ServerConnectionPage extends VBox {
                 }
             }
         });
-
-        this.ipAddressField.setPromptText("IP Address");
-        this.portField.setPromptText("Port");
-
-        errorLabel = new Label();
-        errorLabel.setTextFill(Color.RED);
 
         this.getChildren().add(this.ipAddressField);
         this.getChildren().add(this.portField);

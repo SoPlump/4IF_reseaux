@@ -6,16 +6,12 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.VBox;
-import javafx.stage.Popup;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 
 import java.io.IOException;
 
@@ -134,7 +130,6 @@ public class UIController {
                     LOGGER.info(messageArea.getText());
                     Message msg = new Message(messageArea.getText(), controller.getClient().getUsername());
                     messageArea.clear();
-                    //this.conversationArea.addMessage(msg);
                     try {
                         controller.sendMessage(msg);
                     } catch (IOException e) {
@@ -156,6 +151,8 @@ public class UIController {
         this.leftFlow.getChildren().add(groupName);
         this.leftFlow.getChildren().add(userListArea);
         this.leftFlow.getChildren().add(groupListArea);
+
+        // Load the server connection page first
 
         loadServerConnectionPage();
     }
@@ -187,6 +184,7 @@ public class UIController {
         this.mainPane.setCenter(registerPage);
         LOGGER.debug("loading register page");
     }
+
     public void loadServerConnectionPage() {
         this.mainPane.setLeft(null);
         this.mainPane.setBottom(null);
@@ -198,15 +196,14 @@ public class UIController {
     public void connectUser(String username, String password) {
         if (this.controller.connectUser(username, password)) {
             loadConversationPage();
-        }
-        else {
-            this.loginPage.printConnectionError(); //todo: afficher la bonne erreur : déjà connecté ou mauvais mdp ou identifiant
+        } else {
+            this.loginPage.printConnectionError();
         }
     }
 
     public void registerUser(String username, String password, String confirmationPassword) {
         LOGGER.debug("meme mdp : " + password.equals(confirmationPassword));
-        if ((password.equals(""))||(username.equals(""))) {
+        if ((password.equals("")) || (username.equals(""))) {
             this.registerPage.printRegistrationError("Please enter an username and a password.");
             return;
         }
@@ -214,18 +211,16 @@ public class UIController {
             if (this.controller.registerUser(username, password)) {
                 LOGGER.debug("UIController : creating a user");
                 loadConversationPage();
-            }
-            else {
+            } else {
                 this.registerPage.printRegistrationError("User already exists.");
             }
-        }
-        else {
+        } else {
             this.registerPage.printRegistrationError("Please enter the same password.");
         }
     }
 
     public void connectToServer(String ipAddress, String port) {
-        if(this.controller.connectToServer(ipAddress, port)) {
+        if (this.controller.connectToServer(ipAddress, port)) {
             loadLoginPage();
         } else {
             this.serverConnectionPage.printConnectionError();
@@ -238,6 +233,7 @@ public class UIController {
 
     /**
      * Displays an error message in the {@link StatusBar}
+     *
      * @param error the error message to print
      */
     public void printError(String error) {
