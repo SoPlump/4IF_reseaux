@@ -38,8 +38,8 @@ public class RemoteThread extends Thread {
             this.outStream = new PrintWriter(remoteSocket.getOutputStream());
             this.dataOutStream = new DataOutputStream(remoteSocket.getOutputStream());
             this.dataInputStream = new DataInputStream(remoteSocket.getInputStream());
-            idImage = 0;
-            idUser = 0;
+            //idImage = 0;
+            //idUser = 0;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -256,6 +256,7 @@ public class RemoteThread extends Thread {
                 response.addHeader("Content-Type: " + Files.probeContentType(file.toPath()));
                 response.addHeader("Server: Bot");
                 //body = request.getRequestBodyElement("image");
+                ++idImage;
 
                 //String imageBody = new String(request.getRequestBody()).split("\n\n")[1];
                 LOGGER.info(Arrays.toString(request.getRequestBody()));
@@ -322,13 +323,12 @@ public class RemoteThread extends Thread {
     }
 
     private void httpDeleteMethod() {
+        Response response = new Response();
+        String body = "";
         try {
-            Response response = new Response();
 
             response.addHeader("Content-Type: text/html");
             response.addHeader("Server: Bot");
-
-            String body = "";
 
             LOGGER.debug(request.getPath());
             request.setPath(request.getPath().replace("//", "/"));
@@ -355,14 +355,24 @@ public class RemoteThread extends Thread {
                 response.setStatusCode(404);
                 body = "<h1>File not Found</h1>";
             }
-            response.setResponseBody(body.getBytes());
-
-            dataOutStream.write(response.getByteResponse(), 0, response.getByteResponse().length);
-            dataOutStream.flush();
-            dataOutStream.close();
 
         } catch (Exception e) {
+            response.setStatusCode(500);
+            body = "<h1>Couldn't delete file</h1>";
             LOGGER.error(e.getMessage(), e);
+        } finally {
+            try {
+
+                //response.setStatusCode(200);
+                response.setResponseBody(body.getBytes());
+
+                dataOutStream.write(response.getByteResponse(), 0, response.getByteResponse().length);
+                dataOutStream.flush();
+                dataOutStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 
