@@ -1,5 +1,6 @@
 package fr.reseaux.httpserver.server;
 
+import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,6 +28,7 @@ public class RemoteThread extends Thread {
     private DataInputStream dataInputStream;
 
     private static int idUser;
+    private static int idImage;
 
     public RemoteThread(Socket remoteSocket) {
         this.remoteSocket = remoteSocket;
@@ -35,6 +37,8 @@ public class RemoteThread extends Thread {
             this.outStream = new PrintWriter(remoteSocket.getOutputStream());
             this.dataOutStream = new DataOutputStream(remoteSocket.getOutputStream());
             this.dataInputStream = new DataInputStream(remoteSocket.getInputStream());
+            idImage = 0;
+            idUser = 0;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -155,9 +159,21 @@ public class RemoteThread extends Thread {
             }
 
              */
+            int j = 0;
             for (int i = 0; i < contentLength; i++) {
-                //LOGGER.info(i);
                 body[i] = dataInputStream.readByte();
+                //LOGGER.info(i);
+                /*try {
+                    body2[i] = dataInputStream.readByte();
+                    LOGGER.info(i);
+                    j++;
+                } catch (EOFException e) {
+                    LOGGER.info("Length : " + request.getRequestHeader().get("Content-Length"));
+                    LOGGER.info("j : " + j);
+                    break;
+                }
+                */
+
             }
 
             request.setRequestBody(body);
@@ -231,7 +247,8 @@ public class RemoteThread extends Thread {
             String body = null;
 
             if("/downloadFile".equals(path)) {
-                File file = new File("src/main/resources/image.jpg");
+                File file = new File("src/main/resources/image"+idImage+".jpg");
+                LOGGER.debug(file.getAbsolutePath());
                 file.createNewFile();
                 response.addHeader("Content-Type: " + Files.probeContentType(file.toPath()));
                 response.addHeader("Server: Bot");
@@ -242,12 +259,44 @@ public class RemoteThread extends Thread {
                 //FileWriter writer = new FileWriter(new File("src/main/resources/image.jpg"));
                 //writer.write(imageBody);
 
-                Files.write(new File("src/main/resources/image.jpg").toPath(),request.getRequestBody());
+                int combo = 0;
+                boolean firstLineFound = false;
+                byte tempByte;
+                int index = 0;
+                byte [] currentBody = request.getRequestBody();
+                while(!firstLineFound) {
+                    tempByte = currentBody[index];
+                    index ++;
+                    if((combo%2 == 0 && tempByte == 13) || (combo%2 == 1 && tempByte == 10)) {
+                        combo = combo + 1;
+                    } else {
+                        combo = 0;
+                    }
+                    if (combo == 4) {
+                        firstLineFound = true;
+                    }
+                }
+                int newBodyLength = Integer.parseInt(request.getRequestHeader().get("Content-Length")) - index;
+                LOGGER.info(index);
+                LOGGER.info(newBodyLength);
+                byte[] imageBody = new byte[newBodyLength];
+
+                System.arraycopy(currentBody, index, imageBody, 0, newBodyLength);
+
+                byte[] alsoImageBody = Arrays.copyOfRange(currentBody, index, currentBody.length);
+
+
+
+
+                Files.write(file.toPath(),imageBody);
+                idImage++;
                 //BufferedImage bImage = ImageIO.read(new File("src/main/resources/image.jpg");
                 //ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 //ImageIO.write(bImage, "jpg", bos );
 
                 body="";
+                response.setResponseBody(imageBody);
+
 
                 //LOGGER.debug(request.getFirstLine());
                 //LOGGER.debug(request.getRequestBody());
@@ -270,7 +319,7 @@ public class RemoteThread extends Thread {
 
 
             response.setStatusCode(200);
-            response.setResponseBody(body.getBytes());
+            //response.setResponseBody(body.getBytes());
 
             dataOutStream.write(response.getByteResponse(), 0, response.getByteResponse().length);
             dataOutStream.flush();
