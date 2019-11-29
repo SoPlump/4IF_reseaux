@@ -1,12 +1,16 @@
 package fr.reseaux.httpserver.server;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.util.ArrayUtils;
 import sun.security.util.ArrayUtil;
 
 import java.io.ByteArrayOutputStream;
+import java.security.InvalidParameterException;
 import java.util.HashMap;
 
 public class Response {
+    private static final Logger LOGGER = LogManager.getLogger(RemoteThread.class);
 
     private HashMap<Integer, String> statusCodes;
 
