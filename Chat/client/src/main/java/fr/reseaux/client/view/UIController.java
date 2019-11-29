@@ -6,13 +6,16 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 
 import java.io.IOException;
 
@@ -29,6 +32,11 @@ public class UIController {
 
     @FXML
     private FlowPane bottomFlow;
+
+    //@FXML
+    //private MenuBar menuBar;
+
+    private ChatMenuBar menuBar;
 
     private FlowPane leftFlow;
 
@@ -60,10 +68,13 @@ public class UIController {
 
     private Button refreshButton;
 
+    private FlowPane topFlow;
+
     public UIController(Stage stage, Controller controller) {
         this.stage = stage;
 
         // Conversation page
+        this.menuBar = new ChatMenuBar(this);
         this.sendButton = new Button();
         this.conversationArea = new ConversationArea();
         this.messageArea = new TextArea();
@@ -74,6 +85,7 @@ public class UIController {
         this.userListArea = new UserListArea();
         this.groupListArea = new GroupListArea();
         this.refreshButton = new Button();
+        this.topFlow = new FlowPane();
 
         // Login page
         this.loginPage = new LoginPage(this);
@@ -133,13 +145,19 @@ public class UIController {
             }
         });
 
-        //this.mainPane.setBottom(this.conversationArea);
-        //this.mainPane.setBottom(this.statusBar);
+        topFlow.getChildren().add(menuBar);
+        topFlow.getChildren().add(statusBar);
 
+        this.userListArea.setPrefHeight(150);
+        this.groupListArea.setPrefHeight(150);
+        this.bottomFlow.getChildren().add(messageArea);
+        this.bottomFlow.getChildren().add(sendButton);
+        this.leftFlow.setPrefWidth(80.0);
+        this.leftFlow.getChildren().add(groupName);
+        this.leftFlow.getChildren().add(userListArea);
+        this.leftFlow.getChildren().add(groupListArea);
 
         loadServerConnectionPage();
-        //loadLoginPage();
-        //loadRegisterPage();
     }
 
     public void close() {
@@ -160,23 +178,19 @@ public class UIController {
 
     private void loadConversationPage() {
         this.mainPane.setCenter(conversationArea);
-        this.mainPane.setTop(statusBar);
-        this.bottomFlow.getChildren().add(messageArea);
-        this.bottomFlow.getChildren().add(sendButton);
-        this.leftFlow.setPrefWidth(80.0);
         this.mainPane.setLeft(leftFlow);
-        this.leftFlow.getChildren().add(groupName);
-        this.leftFlow.getChildren().add(userListArea);
-        this.leftFlow.getChildren().add(groupListArea);
-        //this.leftFlow.getChildren().add(refreshButton);
+        this.mainPane.setTop(topFlow);
+        this.mainPane.setBottom(bottomFlow);
     }
 
     public void loadRegisterPage() {
         this.mainPane.setCenter(registerPage);
         LOGGER.debug("loading register page");
     }
-
     public void loadServerConnectionPage() {
+        this.mainPane.setLeft(null);
+        this.mainPane.setBottom(null);
+        this.mainPane.setTop(null);
         this.mainPane.setCenter(serverConnectionPage);
         LOGGER.debug("loading server connection page");
     }
@@ -249,6 +263,14 @@ public class UIController {
 
     public void clearGroupsArea() {
         this.groupListArea.clearArea();
+    }
+
+    public void disconnect() {
+        Controller.getClient().disconnect();
+    }
+
+    public void quit() {
+        Controller.getClient().close();
     }
 }
 
